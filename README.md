@@ -11,9 +11,3 @@ For example
 ```bash
 npx @comet/upgrade v4
 ```
-
-or
-
-```bash
-npx @comet/upgrade 4
-```
