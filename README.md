@@ -11,3 +11,17 @@ For example
 ```bash
 npx @comet/upgrade v4
 ```
+
+## Development
+
+Start the development process
+
+```bash
+yarn start
+```
+
+Run the upgrade script
+
+```bash
+bin/index.js <target-version>
+```
