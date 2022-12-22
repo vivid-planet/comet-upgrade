@@ -28,6 +28,12 @@ async function main() {
         process.exit(-1);
     }
 
+    await runUpgradeScripts(targetVersion);
+}
+
+async function runUpgradeScripts(targetVersion: string) {
+    const scriptsFolder = path.join(__dirname, targetVersion);
+
     for (const fileName of fs.readdirSync(scriptsFolder)) {
         const upgradeScript = await import(path.join(scriptsFolder, fileName));
 
