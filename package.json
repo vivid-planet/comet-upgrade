@@ -1,0 +1,50 @@
+{
+    "name": "@comet/upgrade",
+    "version": "1.0.0",
+    "description": "Upgrade scripts for Comet DXP",
+    "homepage": "https://github.com/vivid-planet/comet-upgrade#readme",
+    "bugs": {
+        "url": "https://github.com/vivid-planet/comet-upgrade/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vivid-planet/comet-upgrade"
+    },
+    "license": "BSD-2-Clause",
+    "author": "Vivid Planet Software GmbH <office@vivid-planet.com> (https://www.vivid-planet.com/)",
+    "main": "lib/index.js",
+    "bin": "bin/index.js",
+    "files": [
+        "bin/index.js",
+        "lib/**/*.js"
+    ],
+    "scripts": {
+        "build": "yarn clean && tsc",
+        "clean": "rimraf lib/",
+        "lint": "run-p lint:eslint lint:tsc",
+        "lint:eslint": "eslint --max-warnings 0 src/",
+        "lint:tsc": "tsc",
+        "prepare": "husky install",
+        "start": "yarn clean && tsc --watch"
+    },
+    "devDependencies": {
+        "@comet/eslint-config": "^3.2.1",
+        "@types/node": "^14.18.34",
+        "eslint": "^8.29.0",
+        "husky": "^8.0.2",
+        "lint-staged": "^13.1.0",
+        "prettier": "^2.8.1",
+        "rimraf": "^3.0.2",
+        "typescript": "^4.9.4",
+        "yarn-run-all": "^3.1.1"
+    },
+    "packageManager": "yarn@3.3.0",
+    "engines": {
+        "node": "14",
+        "yarn": "3"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org"
+    }
+}
