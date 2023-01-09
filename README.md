@@ -39,7 +39,7 @@ npx @comet/upgrade v4
     git checkout -b upgrade-comet-to-4
     ```
 
-    Excute the local @comet/upgrade binary:
+    Execute the local @comet/upgrade binary:
 
     ```sh
     ../comet-upgrade/bin/index.js 4 # comet-upgrade directory
