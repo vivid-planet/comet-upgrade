@@ -1,3 +1,6 @@
 {
-    "extends": "@comet/eslint-config/core"
+    "extends": "@comet/eslint-config/core",
+    "rules": {
+        "no-console": "off"
+    }
 }
