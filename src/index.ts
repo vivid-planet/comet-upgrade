@@ -38,17 +38,35 @@ async function main() {
 }
 
 function getCurrentVersion() {
-    if (!fs.existsSync("admin/node_modules/@comet/admin/package.json")) {
-        return;
+    if (!fs.existsSync("admin/package.json")) {
+        console.error(`File 'admin/package.json' doesn't exist. Make sure to call the script in the root of your project`);
+        process.exit(-1);
     }
 
-    const packageJson = JSON.parse(fs.readFileSync("admin/node_modules/@comet/admin/package.json").toString());
-
-    if (!packageJson.version || !semver.valid(packageJson.version)) {
-        return;
+    interface PackageJson {
+        dependencies?: Record<string, string | undefined>;
     }
 
-    return semver.major(packageJson.version);
+    const packageJson = JSON.parse(fs.readFileSync("admin/package.json").toString()) as PackageJson;
+
+    const versionRange = packageJson.dependencies?.["@comet/admin"];
+
+    if (versionRange === undefined) {
+        console.error(`Package '@comet/admin' isn't listed as a dependency. Is this a Comet DXP project?`);
+        process.exit(-1);
+    }
+
+    // ^3.0.0 | ~3.0.0 | 3.0.0-canary -> 3.0.0
+    const versionMatches = versionRange.match(/\d\.\d\.\d/);
+
+    if (versionMatches === null) {
+        console.error(`Unsupported version range '${versionRange}'. Example range: ^3.0.0`);
+        process.exit(-1);
+    }
+
+    const version = versionMatches[0];
+
+    return semver.major(version);
 }
 
 async function runUpgradeScripts(targetVersion: number) {
