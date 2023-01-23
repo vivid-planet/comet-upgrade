@@ -23,7 +23,7 @@
         "clean": "rimraf lib/",
         "lint": "run-p lint:eslint lint:tsc",
         "lint:eslint": "eslint --max-warnings 0 src/",
-        "lint:tsc": "tsc",
+        "lint:tsc": "tsc --noEmit",
         "prepare": "husky install",
         "start": "yarn clean && tsc --watch"
     },
