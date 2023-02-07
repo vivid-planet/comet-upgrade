@@ -18,7 +18,7 @@ jobs:
 
             - uses: actions/checkout@v3
               with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
+                  token: ${{ secrets.GH_TOKEN }}
 
             - run: |
                   git config user.name github-actions
@@ -38,3 +38,25 @@ jobs:
 
             - name: Build
               run: yarn build
+
+            - name: Bump version
+              if: |
+                  github.base_ref == 'main' &&
+                  github.event.pull_request.merged == true
+              run: echo "NEW_VERSION=$(npm --no-git-tag-version version minor)" >> $GITHUB_ENV
+
+            - name: Commit package.json
+              if: |
+                  github.base_ref == 'main' &&
+                  github.event.pull_request.merged == true
+              uses: EndBug/add-and-commit@v9
+              with:
+                  message: Publish ${{ env.NEW_VERSION }}
+
+            - name: Publish release
+              if: |
+                  github.base_ref == 'main' &&
+                  github.event.pull_request.merged == true
+              run: npm publish
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
