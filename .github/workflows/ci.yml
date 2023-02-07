@@ -43,13 +43,15 @@ jobs:
               if: |
                   github.base_ref == 'main' &&
                   github.event.pull_request.merged == true
-              run: npm --no-git-tag-version version minor
+              run: echo "NEW_VERSION=$(npm --no-git-tag-version version minor)" >> $GITHUB_ENV
 
             - name: Commit package.json
               if: |
                   github.base_ref == 'main' &&
                   github.event.pull_request.merged == true
               uses: EndBug/add-and-commit@v9
+              with:
+                  message: Publish ${{ env.NEW_VERSION }}
 
             - name: Publish release
               if: |
