@@ -111,7 +111,7 @@ __metadata:
   resolution: "@comet/upgrade@workspace:."
   dependencies:
     "@comet/eslint-config": ^3.2.1
-    "@types/node": ^14.18.34
+    "@types/node": ^18.0.0
     "@types/prettier": ^2.7.1
     "@types/semver": ^7.3.13
     eslint: ^8.56.0
@@ -642,10 +642,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.18.34":
-  version: 14.18.34
-  resolution: "@types/node@npm:14.18.34"
-  checksum: 25ac3b456a0b7b82c76b37276ec86845849e8276fc81d1470a87227c105c619e299aa7165b6148aa11a4ea156b1452f6d3327935f3e7dc0067ff54dde0e3d4e0
+"@types/node@npm:^18.0.0":
+  version: 18.19.10
+  resolution: "@types/node@npm:18.19.10"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: eea429c1fe8d25702c1e860f5c4ac053db3c52a5884646f458513b622a507660a6c88c717ee4f106e63c82f4ec6cafbf999e3f3f1d3083f7a40b4f715e03332b
   languageName: node
   linkType: hard
 
@@ -4350,6 +4352,13 @@ __metadata:
     has-symbols: ^1.0.3
     which-boxed-primitive: ^1.0.2
   checksum: b7a1cf5862b5e4b5deb091672ffa579aa274f648410009c81cca63fed3b62b610c4f3b773f912ce545bb4e31edc3138975b5bc777fc6e4817dca51affb6380e9
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~5.26.4":
+  version: 5.26.5
+  resolution: "undici-types@npm:5.26.5"
+  checksum: 3192ef6f3fd5df652f2dc1cd782b49d6ff14dc98e5dced492aa8a8c65425227da5da6aafe22523c67f035a272c599bb89cfe803c1db6311e44bed3042fc25487
   languageName: node
   linkType: hard
 
