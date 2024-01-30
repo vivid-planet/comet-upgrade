@@ -28,6 +28,8 @@
         "start": "yarn clean && tsc --watch"
     },
     "dependencies": {
+        "eslint": "^8.56.0",
+        "glob": "^10.3.10",
         "prettier": "^2.8.1",
         "semver": "^7.3.8"
     },
@@ -36,7 +38,6 @@
         "@types/node": "^14.18.34",
         "@types/prettier": "^2.7.1",
         "@types/semver": "^7.3.13",
-        "eslint": "^8.29.0",
         "husky": "^8.0.2",
         "lint-staged": "^13.1.0",
         "rimraf": "^3.0.2",
