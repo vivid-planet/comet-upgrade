@@ -11,7 +11,6 @@ export default async function renameSubjectEntityDecorator() {
     const files: string[] = glob.sync(["api/src/**/*.ts"]);
 
     for (const filePath of files) {
-        console.log(filePath);
         let fileContent = (await readFile(filePath)).toString();
 
         if (!fileContent.includes("SubjectEntity")) {
