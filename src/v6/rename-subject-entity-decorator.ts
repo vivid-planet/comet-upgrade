@@ -3,7 +3,7 @@ import { readFile, writeFile } from "fs/promises";
 import { glob } from "glob";
 
 /**
- * Renames @SubjectEntity() decorator to @AffectedEntity() decorator.
+ * Renames @SubjectEntity() decorator to @AffectedEntity().
  */
 export default async function renameSubjectEntityDecorator() {
     const eslint = new ESLint({ cwd: process.cwd(), fix: true });
