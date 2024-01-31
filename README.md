@@ -19,7 +19,7 @@ npx @comet/upgrade v4
 1. Start the development process:
 
     ```sh
-    yarn start
+    npm start
     ```
 
 2. Add a new script for the version you want to upgrade to, for instance, `src/v4/change-something.ts`.
