@@ -19,13 +19,13 @@
         "lib/**/*.js"
     ],
     "scripts": {
-        "build": "yarn clean && tsc",
+        "build": "npm run clean && tsc",
         "clean": "rimraf lib/",
         "lint": "run-p lint:eslint lint:tsc",
         "lint:eslint": "eslint --max-warnings 0 src/",
         "lint:tsc": "tsc --noEmit",
         "prepare": "husky install",
-        "start": "yarn clean && tsc --watch"
+        "start": "npm run clean && tsc --watch"
     },
     "dependencies": {
         "eslint": "^8.56.0",
@@ -40,14 +40,12 @@
         "@types/semver": "^7.3.13",
         "husky": "^8.0.2",
         "lint-staged": "^13.1.0",
+        "npm-run-all": "^4.1.5",
         "rimraf": "^3.0.2",
-        "typescript": "^4.9.4",
-        "yarn-run-all": "^3.1.1"
+        "typescript": "^4.9.4"
     },
-    "packageManager": "yarn@3.3.0",
     "engines": {
-        "node": "20",
-        "yarn": "3"
+        "node": "20"
     },
     "publishConfig": {
         "access": "public",

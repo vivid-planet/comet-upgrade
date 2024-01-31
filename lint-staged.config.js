@@ -1,5 +1,5 @@
 module.exports = {
-    "*.{js,json,md,yml}": "yarn exec prettier --check",
-    "*.{ts,tsx,js,jsx,json,css,scss,md}": () => "yarn lint:eslint",
-    "*.{ts,tsx}": () => "yarn lint:tsc",
+    "*.{js,json,md,yml}": "npx prettier --check",
+    "*.{ts,tsx,js,jsx,json,css,scss,md}": () => "npm run lint:eslint",
+    "*.{ts,tsx}": () => "npm run lint:tsc",
 };

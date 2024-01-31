@@ -77,7 +77,7 @@ function getCurrentVersion() {
 
 async function updateDependencies(targetVersion: number) {
     const microservices = ["api", "admin", "site"];
-    const packages: Record<typeof microservices[number], string[]> = {
+    const packages: Record<(typeof microservices)[number], string[]> = {
         api: ["@comet/blocks-api", "@comet/cms-api"],
         admin: [
             "@comet/admin",
