@@ -40,6 +40,8 @@ async function main() {
     await updateDependencies(targetVersion);
 
     await runUpgradeScripts(targetVersion);
+
+    await runEslintFix();
 }
 
 interface PackageJson {
@@ -154,6 +156,20 @@ async function runUpgradeScripts(targetVersion: number) {
             console.error(`Script 'v${targetVersion}/${fileName}' failed to execute. See original error below`);
             console.error(error);
         }
+    }
+}
+
+async function runEslintFix() {
+    console.info("Fixing eslint errors");
+    const microservices = ["api", "admin", "site"];
+
+    for (const microservice of microservices) {
+        if (!fs.existsSync(`${microservice}/package.json`)) {
+            console.warn(`File '${microservice}/package.json' doesn't exist. Skipping microservice`);
+            continue;
+        }
+
+        await executeCommand("npm", ["run", "--prefix", microservice, "--no-audit", "--loglevel", "error", "lint:eslint", "--", "--fix"]);
     }
 }
 
