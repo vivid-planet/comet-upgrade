@@ -4,6 +4,11 @@ import path from "path";
 import semver from "semver";
 
 const VERSION_NUMBER = /^v?\d+$/;
+const microservices = ["api", "admin", "site"] as const;
+
+function microserviceExists(microservice: "api" | "admin" | "site") {
+    return fs.existsSync(`${microservice}/package.json`);
+}
 
 async function main() {
     let targetVersionArg = process.argv[2];
@@ -50,7 +55,7 @@ interface PackageJson {
 }
 
 function getCurrentVersion() {
-    if (!fs.existsSync("admin/package.json")) {
+    if (!microserviceExists("admin")) {
         console.error(`File 'admin/package.json' doesn't exist. Make sure to call the script in the root of your project`);
         process.exit(-1);
     }
@@ -78,7 +83,6 @@ function getCurrentVersion() {
 }
 
 async function updateDependencies(targetVersion: number) {
-    const microservices = ["api", "admin", "site"];
     const packages: Record<(typeof microservices)[number], string[]> = {
         api: ["@comet/blocks-api", "@comet/cms-api"],
         admin: [
@@ -96,7 +100,7 @@ async function updateDependencies(targetVersion: number) {
     };
 
     for (const microservice of microservices) {
-        if (!fs.existsSync(`${microservice}/package.json`)) {
+        if (!microserviceExists(microservice)) {
             console.warn(`File '${microservice}/package.json' doesn't exist. Skipping microservice`);
             continue;
         }
@@ -161,10 +165,9 @@ async function runUpgradeScripts(targetVersion: number) {
 
 async function runEslintFix() {
     console.info("Fixing eslint errors");
-    const microservices = ["api", "admin", "site"];
 
     for (const microservice of microservices) {
-        if (!fs.existsSync(`${microservice}/package.json`)) {
+        if (!microserviceExists(microservice)) {
             console.warn(`File '${microservice}/package.json' doesn't exist. Skipping microservice`);
             continue;
         }
