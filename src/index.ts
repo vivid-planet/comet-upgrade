@@ -168,7 +168,6 @@ async function runEslintFix() {
 
     for (const microservice of microservices) {
         if (!microserviceExists(microservice)) {
-            console.warn(`File '${microservice}/package.json' doesn't exist. Skipping microservice`);
             continue;
         }
 
