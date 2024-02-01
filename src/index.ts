@@ -164,7 +164,7 @@ async function runUpgradeScripts(targetVersion: number) {
 }
 
 async function runEslintFix() {
-    console.info("Fixing eslint errors");
+    console.info("Fixing ESLint errors");
 
     for (const microservice of microservices) {
         if (!microserviceExists(microservice)) {
