@@ -171,7 +171,11 @@ async function runEslintFix() {
             continue;
         }
 
-        await executeCommand("npm", ["run", "--prefix", microservice, "--no-audit", "--loglevel", "error", "lint:eslint", "--", "--fix"]);
+        try {
+            await executeCommand("npm", ["run", "--prefix", microservice, "--no-audit", "--loglevel", "error", "lint:eslint", "--", "--fix"]);
+        } catch (e) {
+            console.error(`Couldn't find script 'lint:eslint' in ${microservice}`);
+        }
     }
 }
 
