@@ -174,7 +174,8 @@ async function runEslintFix() {
         try {
             await executeCommand("npm", ["run", "--prefix", microservice, "--no-audit", "--loglevel", "error", "lint:eslint", "--", "--fix"]);
         } catch (e) {
-            console.error(`Error trying to run 'lint:eslint' in ${microservice}`);
+            console.error(`Failed to fix ESLint errors in ${microservice}. See original error below`);
+            console.error(error);
         }
     }
 }
