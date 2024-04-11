@@ -1,3 +1,4 @@
+import fs from "fs";
 import { readFile, writeFile } from "fs/promises";
 
 import { formatCode } from "../util/format-code.util";
@@ -7,15 +8,20 @@ import { formatCode } from "../util/format-code.util";
  */
 export default async function importAdminThemeTypes() {
     const filePath = "admin/src/vendors.d.ts";
+    const typeReference = '/// <reference types="@comet/admin-theme" />';
 
-    let fileContent = (await readFile(filePath)).toString();
+    let fileContent = "";
+    if (fs.existsSync(filePath)) {
+        fileContent = (await readFile(filePath)).toString();
+    }
 
-    if (fileContent.includes('<reference types="@comet/admin-theme" />')) {
+    if (fileContent.includes(typeReference)) {
         return;
     }
 
-    fileContent = `/// <reference types="@comet/admin-theme" />
+    fileContent = `${typeReference}
     
     ${fileContent}`;
+
     await writeFile(filePath, await formatCode(fileContent, filePath));
 }
