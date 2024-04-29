@@ -50,10 +50,9 @@ export default async function hideGraphqlFieldSuggestions() {
 
     // return if property formatError already exists
     if (graphqlForRootCall.getArguments().find((arg) => arg.getText().includes("formatError"))) {
-        console.warn(
-            `WARNING: formatError property already exists in GraphQLModule.forRootAsync options. To be sure GraphQl field suggestions are disabled for non dev environments, please check if the implementation already contains: ${formatErrorImplText}`,
+        throw new Error(
+            `formatError property already exists in GraphQLModule.forRootAsync options. To be sure GraphQl field suggestions are disabled for non dev environments, please check if the implementation already contains: ${formatErrorImplText}`,
         );
-        return;
     }
 
     // Find the useFactory function within the GraphQLModule.forRootAsync call
