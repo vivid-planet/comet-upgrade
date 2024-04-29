@@ -20,11 +20,8 @@ export default async function hideGraphqlFieldSuggestions() {
         moduleSpecifier: "@nestjs/apollo",
     });
 
-    // Get the AppModule class
-    const appModuleClass = sourceFile.getClassOrThrow("AppModule");
-
     // Get the forRoot method within AppModule
-    const forRootMethod = appModuleClass.getMethodOrThrow("forRoot");
+    const forRootMethod = sourceFile.getClassOrThrow("AppModule").getMethodOrThrow("forRoot");
 
     // Get the GraphQLModule.forRootAsync call within the forRoot method
     const graphqlForRootCall = forRootMethod
