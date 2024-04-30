@@ -31,7 +31,8 @@
         "eslint": "^8.56.0",
         "glob": "^10.3.10",
         "prettier": "^2.8.1",
-        "semver": "^7.3.8"
+        "semver": "^7.3.8",
+        "ts-morph": "^22.0.0"
     },
     "devDependencies": {
         "@comet/eslint-config": "^3.2.1",
