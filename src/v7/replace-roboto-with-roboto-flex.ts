@@ -41,7 +41,7 @@ const addNewPackageImport = async () => {
     const filePath = "admin/src/App.tsx";
     let fileContent = (await readFile(filePath)).toString();
 
-    fileContent = `import "@fontsource-variable/roboto-flex";
+    fileContent = `import "@fontsource-variable/roboto-flex/full.css";
     ${fileContent}`;
 
     await writeFile(filePath, await formatCode(fileContent, filePath));
