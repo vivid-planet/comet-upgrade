@@ -71,7 +71,7 @@ function getCurrentVersion() {
     }
 
     // ^3.0.0 | ~3.0.0 | 3.0.0-canary -> 3.0.0
-    const versionMatches = versionRange.match(/\d\.\d\.\d/);
+    const versionMatches = versionRange.match(/\d+\.\d+\.\d+/);
 
     if (versionMatches === null) {
         console.error(`Unsupported version range '${versionRange}'. Example range: ^3.0.0`);
