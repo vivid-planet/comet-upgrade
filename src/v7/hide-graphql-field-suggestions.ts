@@ -72,7 +72,7 @@ export default async function hideGraphqlFieldSuggestions() {
     // Add your formatError to GraphQLModule.forRootAsync options
     returnObjectLiteral.addPropertyAssignment({
         name: "formatError",
-        initializer: ({ write }) => write(formatErrorImplText),
+        initializer: formatErrorImplText,
     });
 
     sourceFile.saveSync();
