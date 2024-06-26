@@ -123,6 +123,7 @@ async function updateDependencies(targetVersion: SemVer) {
             "--no-audit",
             "--loglevel",
             "error",
+            targetVersion.prerelease.length > 0 ? "--save-exact" : "",
             ...dependencies.map((dependency) => `${dependency}@${targetVersion.version}`),
             ...devDependencies.map((dependency) => `${dependency}@${targetVersion.version}`),
         ]);
