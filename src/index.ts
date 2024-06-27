@@ -1,10 +1,9 @@
 import fs from "fs";
 import path from "path";
-import semver from "semver";
+import semver, { SemVer } from "semver";
 
 import { executeCommand } from "./util/execute-command.util";
 
-const VERSION_NUMBER = /^v?\d+$/;
 const microservices = ["api", "admin", "site"] as const;
 
 function microserviceExists(microservice: "api" | "admin" | "site") {
@@ -12,28 +11,26 @@ function microserviceExists(microservice: "api" | "admin" | "site") {
 }
 
 async function main() {
-    let targetVersionArg = process.argv[2];
+    const targetVersionArg = process.argv[2];
 
     if (targetVersionArg === undefined) {
         console.error("Missing target version! Usage: npx @comet/upgrade <version>");
         process.exit(-1);
     }
 
-    if (!VERSION_NUMBER.test(targetVersionArg)) {
+    const targetVersion = semver.coerce(targetVersionArg, { includePrerelease: true });
+
+    if (!targetVersion) {
         console.error("Can't parse version number. Example usage: npx @comet/upgrade v4");
         process.exit(-1);
     }
 
-    if (targetVersionArg.startsWith("v")) {
-        targetVersionArg = targetVersionArg.substring(1);
-    }
+    const targetVersionFolder = `v${targetVersion.major}`;
 
-    const targetVersion = Number(targetVersionArg);
-
-    const scriptsFolder = path.join(__dirname, `v${targetVersion}`);
+    const scriptsFolder = path.join(__dirname, targetVersionFolder);
 
     if (!fs.existsSync(scriptsFolder)) {
-        console.error(`Can't find target version 'v${targetVersionArg}'`);
+        console.error(`Can't find upgrade scripts for target version '${targetVersionFolder}'`);
         listTargetVersions();
         process.exit(-1);
     }
@@ -45,7 +42,7 @@ async function main() {
     console.info("Updating dependencies");
     await updateDependencies(targetVersion);
 
-    await runUpgradeScripts(targetVersion);
+    await runUpgradeScripts(targetVersionFolder);
 
     await runEslintFix();
 }
@@ -83,7 +80,7 @@ function getCurrentVersion() {
     return semver.major(version);
 }
 
-async function updateDependencies(targetVersion: number) {
+async function updateDependencies(targetVersion: SemVer) {
     const packages: Record<(typeof microservices)[number], string[]> = {
         api: ["@comet/blocks-api", "@comet/cms-api"],
         admin: [
@@ -126,14 +123,15 @@ async function updateDependencies(targetVersion: number) {
             "--no-audit",
             "--loglevel",
             "error",
-            ...dependencies.map((dependency) => `${dependency}@${targetVersion}`),
-            ...devDependencies.map((dependency) => `${dependency}@${targetVersion}`),
+            targetVersion.prerelease.length > 0 ? "--save-exact" : "",
+            ...dependencies.map((dependency) => `${dependency}@${targetVersion.version}`),
+            ...devDependencies.map((dependency) => `${dependency}@${targetVersion.version}`),
         ]);
     }
 }
 
-async function runUpgradeScripts(targetVersion: number) {
-    const scriptsFolder = path.join(__dirname, `v${targetVersion}`);
+async function runUpgradeScripts(targetVersionFolder: string) {
+    const scriptsFolder = path.join(__dirname, targetVersionFolder);
 
     for (const fileName of fs.readdirSync(scriptsFolder)) {
         const upgradeScript = await import(path.join(scriptsFolder, fileName));
@@ -141,7 +139,7 @@ async function runUpgradeScripts(targetVersion: number) {
         try {
             await upgradeScript.default();
         } catch (error) {
-            console.error(`Script 'v${targetVersion}/${fileName}' failed to execute. See original error below`);
+            console.error(`Script '${targetVersionFolder}/${fileName}' failed to execute. See original error below`);
             console.error(error);
         }
     }
