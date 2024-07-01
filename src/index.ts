@@ -18,6 +18,13 @@ async function main() {
         process.exit(-1);
     }
 
+    const isUpgradeScript = fs.existsSync(path.join(__dirname, targetVersionArg.replace(/\.ts$/, ".js")));
+
+    if (isUpgradeScript) {
+        await runUpgradeScript(targetVersionArg.replace(/\.ts$/, ".js"));
+        return;
+    }
+
     const targetVersion = semver.coerce(targetVersionArg, { includePrerelease: true });
 
     if (!targetVersion) {
@@ -134,14 +141,18 @@ async function runUpgradeScripts(targetVersionFolder: string) {
     const scriptsFolder = path.join(__dirname, targetVersionFolder);
 
     for (const fileName of fs.readdirSync(scriptsFolder)) {
-        const upgradeScript = await import(path.join(scriptsFolder, fileName));
+        await runUpgradeScript(path.join(targetVersionFolder, fileName));
+    }
+}
 
-        try {
-            await upgradeScript.default();
-        } catch (error) {
-            console.error(`Script '${targetVersionFolder}/${fileName}' failed to execute. See original error below`);
-            console.error(error);
-        }
+async function runUpgradeScript(script: string) {
+    const upgradeScript = await import(path.join(__dirname, script));
+
+    try {
+        await upgradeScript.default();
+    } catch (error) {
+        console.error(`Script '${script}' failed to execute. See original error below`);
+        console.error(error);
     }
 }
 
