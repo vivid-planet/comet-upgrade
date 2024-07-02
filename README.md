@@ -14,6 +14,12 @@ For example:
 npx @comet/upgrade v4
 ```
 
+You can also run a single upgrade script by providing the path to the script:
+
+```sh
+npx @comet/upgrade v7/hide-graphql-field-suggestions.ts
+```
+
 ## Create a new upgrade script
 
 1. Start the development process:
