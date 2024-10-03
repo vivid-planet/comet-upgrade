@@ -18,10 +18,15 @@ async function main() {
         process.exit(-1);
     }
 
-    const isUpgradeScript = fs.existsSync(path.join(__dirname, targetVersionArg.replace(/\.ts$/, ".js")));
+    const isUpgradeScript = targetVersionArg.endsWith(".ts");
 
     if (isUpgradeScript) {
-        await runUpgradeScript(targetVersionArg.replace(/\.ts$/, ".js"));
+        if (fs.existsSync(path.join(__dirname, targetVersionArg.replace(/\.ts$/, ".js")))) {
+            await runUpgradeScript(targetVersionArg.replace(/\.ts$/, ".js"));
+        } else {
+            console.error(`Can't find upgrade script '${targetVersionArg}'`);
+            process.exit(-1);
+        }
         return;
     }
 
