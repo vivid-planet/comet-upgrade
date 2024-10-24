@@ -23,6 +23,7 @@ async function main() {
     if (isUpgradeScript) {
         if (fs.existsSync(path.join(__dirname, targetVersionArg.replace(/\.ts$/, ".js")))) {
             await runUpgradeScript(targetVersionArg.replace(/\.ts$/, ".js"));
+            await runEslintFix();
         } else {
             console.error(`Can't find upgrade script '${targetVersionArg}'`);
             process.exit(-1);
