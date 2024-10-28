@@ -28,6 +28,7 @@ async function main() {
                 stage: "before-install",
                 script: module.default,
             });
+            await runEslintFix();
         } else {
             console.error(`Can't find upgrade script '${targetVersionArg}'`);
             process.exit(-1);
@@ -130,7 +131,7 @@ async function updateDependencies(targetVersion: SemVer) {
 
         const dependencies = packages[microservice].filter((packageName) => packageJson.dependencies?.[packageName] !== undefined);
 
-        const devDependencies = ["@comet/cli", "@comet/eslint-config"].filter(
+        const devDependencies = ["@comet/cli", "@comet/eslint-config", "@comet/eslint-plugin"].filter(
             (packageName) => packageJson.devDependencies?.[packageName] !== undefined,
         );
 
