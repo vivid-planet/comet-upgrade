@@ -26,7 +26,9 @@ async function main() {
             await runUpgradeScript({
                 name: targetVersionArg,
                 stage: "before-install",
-                script: module.default,
+                // Need default.default because of ESM interoperability with CommonJS.
+                // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
+                script: module.default.default,
             });
             await runEslintFix();
         } else {
@@ -171,7 +173,9 @@ async function findUpgradeScripts(targetVersionFolder: string): Promise<UpgradeS
         scripts.push({
             name: fileName,
             stage: module.stage ?? "after-install",
-            script: module.default,
+            // Need default.default because of ESM interoperability with CommonJS.
+            // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
+            script: module.default.default,
         });
     }
 
