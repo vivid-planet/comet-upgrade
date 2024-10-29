@@ -155,7 +155,9 @@ async function runUpgradeScript(script: string) {
     const upgradeScript = await import(path.join(__dirname, script));
 
     try {
-        await upgradeScript.default();
+        // Need default.default because of ESM interoperability with CommonJS.
+        // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
+        await upgradeScript.default.default();
     } catch (error) {
         console.error(`Script '${script}' failed to execute. See original error below`);
         console.error(error);
