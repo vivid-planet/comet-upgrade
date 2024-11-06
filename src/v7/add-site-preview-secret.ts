@@ -1,3 +1,4 @@
+import { spawn } from "child_process";
 import fs from "fs";
 import * as crypto from "node:crypto";
 import { Project, SyntaxKind } from "ts-morph";
@@ -8,6 +9,8 @@ export default async function addSitePreviewSecret() {
     updateApiFiles3();
     updateDotEnvFile();
     updateValuesTplFile();
+    updateChart();
+    executeHelmDependencyUpdate();
 }
 
 function updateApiFiles1() {
@@ -140,4 +143,56 @@ function updateValuesTplFile() {
     fs.writeFileSync(valuesFileName, content);
 
     console.log("  finished.");
+}
+
+function updateChart() {
+    const filename = "deployment/helm/Chart.yaml";
+
+    console.log(`Update ${filename}`);
+
+    if (!fs.existsSync(filename)) {
+        console.error("  could not find file, please make sure to remove authproxy-preview and execute helm dependency update.");
+        return;
+    }
+
+    const file = fs.readFileSync(filename, "utf8");
+    const lines = file.split(/\n/);
+    let startingLine = 0;
+    let isAuthproxyPreview = false;
+
+    lines.forEach((line, index) => {
+        const match1 = line.match(/-.*oauth2-proxy/);
+        if (match1) {
+            startingLine = index;
+        }
+        const match2 = line.match(/alias.*authproxy-preview/);
+        if (match2) {
+            isAuthproxyPreview = true;
+        }
+        const match3 = line.match(/- .*/);
+        if (match3 && isAuthproxyPreview) {
+            lines.splice(startingLine, index - startingLine);
+            isAuthproxyPreview = false;
+        }
+    });
+
+    const content = lines.join("\n").replace(/oauth2-proxy-preview/g, "site");
+    fs.writeFileSync(filename, content);
+
+    console.log("  finished.");
+}
+
+function executeHelmDependencyUpdate() {
+    console.log('Execute "helm dependency update deployment/helm" ...');
+
+    const child = spawn("helm", ["dependency", "update", "deployment/helm"]);
+    child.stdout.pipe(process.stdout);
+    child.stderr.pipe(process.stderr);
+    child.on("close", (code) => {
+        if (code === 0) {
+            console.log("finished.");
+        } else {
+            console.log("A helm error occured. Please execute manually.");
+        }
+    });
 }
