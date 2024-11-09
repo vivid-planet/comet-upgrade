@@ -22,7 +22,14 @@ async function main() {
 
     if (isUpgradeScript) {
         if (fs.existsSync(path.join(__dirname, targetVersionArg.replace(/\.ts$/, ".js")))) {
-            await runUpgradeScript(targetVersionArg.replace(/\.ts$/, ".js"));
+            const module = await import(path.join(__dirname, targetVersionArg.replace(/\.ts$/, ".js")));
+            await runUpgradeScript({
+                name: targetVersionArg,
+                stage: "before-install",
+                // Need default.default because of ESM interoperability with CommonJS.
+                // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
+                script: module.default.default,
+            });
             await runEslintFix();
         } else {
             console.error(`Can't find upgrade script '${targetVersionArg}'`);
@@ -52,10 +59,16 @@ async function main() {
 
     console.info(`Upgrading from v${currentVersion} to v${targetVersion}`);
 
+    const upgradeScripts = await findUpgradeScripts(targetVersionFolder);
+
+    const beforeInstallScripts = upgradeScripts.filter((script) => script.stage === "before-install");
+    await runUpgradeScripts(beforeInstallScripts);
+
     console.info("Updating dependencies");
     await updateDependencies(targetVersion);
 
-    await runUpgradeScripts(targetVersionFolder);
+    const afterInstallScripts = upgradeScripts.filter((script) => script.stage === "after-install");
+    await runUpgradeScripts(afterInstallScripts);
 
     await runEslintFix();
 }
@@ -143,23 +156,43 @@ async function updateDependencies(targetVersion: SemVer) {
     }
 }
 
-async function runUpgradeScripts(targetVersionFolder: string) {
+type UpgradeScript = {
+    name: string;
+    stage: "before-install" | "after-install";
+    script: () => Promise<void>;
+};
+
+async function findUpgradeScripts(targetVersionFolder: string): Promise<UpgradeScript[]> {
+    const scripts: UpgradeScript[] = [];
+
     const scriptsFolder = path.join(__dirname, targetVersionFolder);
 
     for (const fileName of fs.readdirSync(scriptsFolder)) {
-        await runUpgradeScript(path.join(targetVersionFolder, fileName));
+        const module = await import(path.join(__dirname, targetVersionFolder, fileName));
+
+        scripts.push({
+            name: fileName,
+            stage: module.stage ?? "after-install",
+            // Need default.default because of ESM interoperability with CommonJS.
+            // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
+            script: module.default.default,
+        });
+    }
+
+    return scripts;
+}
+
+async function runUpgradeScripts(scripts: UpgradeScript[]) {
+    for (const script of scripts) {
+        await runUpgradeScript(script);
     }
 }
 
-async function runUpgradeScript(script: string) {
-    const upgradeScript = await import(path.join(__dirname, script));
-
+async function runUpgradeScript(script: UpgradeScript) {
     try {
-        // Need default.default because of ESM interoperability with CommonJS.
-        // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
-        await upgradeScript.default.default();
+        await script.script();
     } catch (error) {
-        console.error(`Script '${script}' failed to execute. See original error below`);
+        console.error(`Script '${script.name}' failed to execute. See original error below`);
         console.error(error);
     }
 }
