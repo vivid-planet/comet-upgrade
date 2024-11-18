@@ -1,7 +1,8 @@
-import { spawn } from "child_process";
 import fs from "fs";
 import * as crypto from "node:crypto";
 import { Project, SyntaxKind } from "ts-morph";
+
+import { executeCommand } from "../util/execute-command.util";
 
 export default async function addSitePreviewSecret() {
     updateApiFiles1();
@@ -10,7 +11,7 @@ export default async function addSitePreviewSecret() {
     updateDotEnvFile();
     updateValuesTplFile();
     updateChart();
-    executeHelmDependencyUpdate();
+    await executeHelmDependencyUpdate();
 }
 
 function updateApiFiles1() {
@@ -182,17 +183,8 @@ function updateChart() {
     console.log("  finished.");
 }
 
-function executeHelmDependencyUpdate() {
+async function executeHelmDependencyUpdate() {
     console.log('Execute "helm dependency update deployment/helm" ...');
 
-    const child = spawn("helm", ["dependency", "update", "deployment/helm"]);
-    child.stdout.pipe(process.stdout);
-    child.stderr.pipe(process.stderr);
-    child.on("close", (code) => {
-        if (code === 0) {
-            console.log("finished.");
-        } else {
-            console.log("A helm error occured. Please execute manually.");
-        }
-    });
+    await executeCommand("helm", ["dependency", "update", "deployment/helm"]);
 }
