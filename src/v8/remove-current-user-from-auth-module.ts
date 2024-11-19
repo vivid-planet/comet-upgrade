@@ -1,5 +1,17 @@
 import { Project, SyntaxKind } from "ts-morph";
 
+/**
+ * from
+ *
+ *     createAuthResolver({
+ *         currentUser: CurrentUser,
+ *     }),
+ *
+ *
+ * to
+ *
+ *     createAuthResolver({}),
+ */
 export default async function removeCurrentUserFromAuthModule() {
     console.log("Remove Current User From Auth Module");
 
@@ -22,7 +34,7 @@ export default async function removeCurrentUserFromAuthModule() {
                     currentUserProp.remove();
                 }
             }
+            sourceFile.save();
         }
-        sourceFile.save();
     });
 }
