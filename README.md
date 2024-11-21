@@ -39,17 +39,10 @@ npx @comet/upgrade v7/hide-graphql-field-suggestions.ts
     cd project-you-want-to-upgrade/
     ```
 
-    Create a new branch to test the script:
+    Run the upgrade script. Replace `<path-to-comet-upgrade-repository>` with the location of the cloned comet-upgrade repository (e.g., `../comet-upgrade/`):
 
     ```sh
-    git checkout -b upgrade-comet-to-4
-    ```
-
-    Execute the local @comet/upgrade binary:
-
-    ```sh
-    ../comet-upgrade/bin/index.js 4 # comet-upgrade directory
-
+    <path-to-comet-upgrade-repository>/bin/index.js v4/change-something.ts
     ```
 
     Verify the changes in your project. If something is not as expected, adapt the upgrade script accordingly and then run it again on a clean state:
@@ -57,5 +50,5 @@ npx @comet/upgrade v7/hide-graphql-field-suggestions.ts
     ```sh
     git reset --hard HEAD
 
-    ../comet-upgrade/bin/index.js 4
+    <path-to-comet-upgrade-repository>/bin/index.js v4/change-something.ts
     ```
