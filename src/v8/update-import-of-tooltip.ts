@@ -22,19 +22,19 @@ export default async function updateImportOfTooltip() {
             }
         }
 
-        const muiTooltipImport = sourceFile.getImportDeclaration((declaration) => declaration.getModuleSpecifierValue() === "@mui/material");
+        const muiImport = sourceFile.getImportDeclaration((declaration) => declaration.getModuleSpecifierValue() === "@mui/material");
 
-        if (!muiTooltipImport) continue;
+        if (!muiImport) continue;
 
-        const namedImports = muiTooltipImport.getNamedImports();
+        const namedImports = muiImport.getNamedImports();
         const tooltipImport = namedImports.find((namedImport) => namedImport.getText() === "Tooltip");
 
         if (tooltipImport) {
             tooltipImport.remove();
         }
 
-        if (muiTooltipImport.getNamedImports().length === 0) {
-            muiTooltipImport.remove();
+        if (muiImport.getNamedImports().length === 0) {
+            muiImport.remove();
         }
 
         if (adminImport) {
