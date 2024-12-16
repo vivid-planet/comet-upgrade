@@ -1,4 +1,3 @@
-import { readFile, writeFile } from "fs/promises";
 import { glob } from "glob";
 import { Project } from "ts-morph";
 
@@ -47,9 +46,5 @@ export default async function updateImportOfTooltip() {
         }
 
         await sourceFile.save();
-
-        const fileContent = (await readFile(filePath)).toString();
-
-        await writeFile(filePath, fileContent);
     }
 }
