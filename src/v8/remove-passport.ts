@@ -1,5 +1,6 @@
 import { existsSync } from "fs";
-import { readFile, writeFile } from "fs/promises";
+
+import { PackageJson } from "../util/package-json.util";
 
 export const stage = "before-install";
 
@@ -8,20 +9,14 @@ export default async function removePassport() {
         return;
     }
 
-    const packageJson = JSON.parse(await readFile("api/package.json", "utf-8"));
-
-    if (packageJson.dependencies) {
-        packageJson.dependencies["@nestjs/jwt"] = "^10.2.0";
-    }
-
-    delete packageJson.dependencies["@nestjs/passport"];
-    delete packageJson.dependencies["passport"];
-    delete packageJson.dependencies["passport-http"];
-    delete packageJson.dependencies["passport-http-bearer"];
-
-    delete packageJson.devDependencies["@types/passport"];
-    delete packageJson.devDependencies["@types/passport-http"];
-    delete packageJson.devDependencies["@types/passport-http-bearer"];
-
-    await writeFile("api/package.json", JSON.stringify(packageJson, null, 4));
+    const packageJson = new PackageJson("api/package.json");
+    packageJson.updateDependency("@nestjs/jwt", "^10.2.0");
+    packageJson.removeDependency("@nestjs/passport");
+    packageJson.removeDependency("passport");
+    packageJson.removeDependency("passport-http");
+    packageJson.removeDependency("passport-http-bearer");
+    packageJson.removeDependency("@types/passport");
+    packageJson.removeDependency("@types/passport-http");
+    packageJson.removeDependency("@types/passport-http-bearer");
+    await packageJson.save();
 }
