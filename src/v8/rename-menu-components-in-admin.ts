@@ -2,8 +2,8 @@ import { glob } from "glob";
 import { Project, ts } from "ts-morph";
 
 const renameMap: Record<string, string> = {
-    IMenuContent: "IMainNavigation",
-    IWithMenu: "IWithMainNavigation",
+    IMenuContent: "MainNavigationContextValue",
+    IWithMenu: "WithMainNavigation",
     Menu: "MainNavigation",
     MenuClassKey: "MainNavigationClassKey",
     MenuCollapsibleItem: "MainNavigationCollapsibleItem",
