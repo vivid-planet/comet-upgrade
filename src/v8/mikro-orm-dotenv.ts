@@ -1,18 +1,19 @@
 import { existsSync } from "fs";
-import { readFile, writeFile } from "fs/promises";
+
+import { PackageJson } from "../util/package-json.util";
 
 /**
- * Add a dotenv call to config.
+ * Adds a `mikro-orm` script to package.json that calls dotenv.
  * See https://mikro-orm.io/docs/upgrading-v5-to-v6#env-files-are-no-longer-automatically-loaded.
  */
 export default async function addDotenvCallToConfig() {
-    if (!existsSync("api/src/db/ormconfig.cli.ts")) {
+    if (!existsSync("api/package.json")) {
         return;
     }
 
-    let fileContent = await readFile("api/src/db/ormconfig.cli.ts", "utf-8");
+    const packageJson = new PackageJson("api/package.json");
 
-    fileContent = `import "dotenv/config";\n\n${fileContent}`;
+    packageJson.addScript("mikro-orm", "dotenv -e .env.secrets -e .env.local -e .env -e .env.site-configs -- mikro-orm");
 
-    await writeFile("api/src/db/ormconfig.cli.ts", fileContent);
+    packageJson.save();
 }

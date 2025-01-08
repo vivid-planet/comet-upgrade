@@ -3,6 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 type Json = {
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
+    scripts?: Record<string, string>;
 };
 
 export class PackageJson {
@@ -45,5 +46,10 @@ export class PackageJson {
 
     save() {
         writeFileSync(this.path, JSON.stringify(this.json, null, 4));
+    }
+
+    addScript(name: string, script: string) {
+        this.json.scripts ??= {};
+        this.json.scripts[name] = script;
     }
 }
