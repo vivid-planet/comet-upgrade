@@ -1,5 +1,4 @@
 import { readFile, writeFile } from "fs/promises";
-import { Project } from "ts-morph";
 
 import { formatCode } from "../util/format-code.util";
 
@@ -15,24 +14,11 @@ export default async function replaceExceptionInterceptorWithExceptionFilter() {
         return;
     }
 
-    const searchString = "app.useGlobalInterceptors\\(new ExceptionInterceptor\\(config.debug\\)\\);";
-    const re = new RegExp(`^.*${searchString}.*$`, "gm");
-    fileContent = fileContent.replace(re, "app.useGlobalFilters(new ExceptionFilter(config.debug));");
+    fileContent = fileContent.replace(
+        "app.useGlobalInterceptors(new ExceptionInterceptor(config.debug));",
+        "app.useGlobalFilters(new ExceptionFilter(config.debug));",
+    );
+    fileContent = fileContent.replace("ExceptionInterceptor", "ExceptionFilter");
 
     await writeFile(filePath, await formatCode(fileContent, filePath));
-
-    const project = new Project({ tsConfigFilePath: "./api/tsconfig.json" });
-
-    const sourceFile = project.getSourceFile(filePath);
-
-    if (!sourceFile) {
-        throw new Error(`Can't get source file for ${filePath}`);
-    }
-
-    sourceFile.addImportDeclaration({
-        namedImports: ["ExceptionFilter"],
-        moduleSpecifier: "@comet/cms-api",
-    });
-
-    sourceFile.saveSync();
 }
