@@ -43,6 +43,10 @@ export class PackageJson {
         delete this.json.devDependencies?.[name];
     }
 
+    getDependency(name: string) {
+        return this.json.dependencies?.[name] ?? this.json.devDependencies?.[name];
+    }
+
     save() {
         writeFileSync(this.path, JSON.stringify(this.json, null, 4));
     }

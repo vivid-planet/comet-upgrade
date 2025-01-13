@@ -3,6 +3,7 @@ import path from "path";
 import semver, { SemVer } from "semver";
 
 import { executeCommand } from "./util/execute-command.util";
+import { PackageJson } from "./util/package-json.util";
 
 const microservices = ["api", "admin", "site"] as const;
 
@@ -73,20 +74,14 @@ async function main() {
     await runEslintFix();
 }
 
-interface PackageJson {
-    dependencies?: Record<string, string | undefined>;
-    devDependencies?: Record<string, string | undefined>;
-}
-
 function getCurrentVersion() {
     if (!microserviceExists("admin")) {
         console.error(`File 'admin/package.json' doesn't exist. Make sure to call the script in the root of your project`);
         process.exit(-1);
     }
 
-    const packageJson = JSON.parse(fs.readFileSync("admin/package.json").toString()) as PackageJson;
-
-    const versionRange = packageJson.dependencies?.["@comet/admin"];
+    const packageJson = new PackageJson("admin/package.json");
+    const versionRange = packageJson.getDependency("@comet/admin");
 
     if (versionRange === undefined) {
         console.error(`Package '@comet/admin' isn't listed as a dependency. Is this a Comet DXP project?`);
@@ -123,36 +118,27 @@ async function updateDependencies(targetVersion: SemVer) {
         site: ["@comet/cms-site"],
     };
 
+    const needsExactVersion = targetVersion.prerelease.length > 0;
+
     for (const microservice of microservices) {
         if (!microserviceExists(microservice)) {
             console.warn(`File '${microservice}/package.json' doesn't exist. Skipping microservice`);
             continue;
         }
 
-        const packageJson = JSON.parse(fs.readFileSync(`${microservice}/package.json`).toString()) as PackageJson;
+        const packageJson = new PackageJson(`${microservice}/package.json`);
 
-        const dependencies = packages[microservice].filter((packageName) => packageJson.dependencies?.[packageName] !== undefined);
+        packages[microservice].forEach((packageName) => {
+            packageJson.updateDependency(packageName, needsExactVersion ? targetVersion.version : `^${targetVersion.version}`);
+        });
 
-        const devDependencies = ["@comet/cli", "@comet/eslint-config", "@comet/eslint-plugin"].filter(
-            (packageName) => packageJson.devDependencies?.[packageName] !== undefined,
-        );
+        ["@comet/cli", "@comet/eslint-config", "@comet/eslint-plugin"].forEach((packageName) => {
+            packageJson.updateDependency(packageName, needsExactVersion ? targetVersion.version : `^${targetVersion.version}`);
+        });
 
-        if (dependencies.length === 0 && devDependencies.length === 0) {
-            console.warn(`Microservice '${microservice}' has no Comet DXP dependencies. Skipping install`);
-            continue;
-        }
+        packageJson.save();
 
-        await executeCommand("npm", [
-            "install",
-            "--prefix",
-            microservice,
-            "--no-audit",
-            "--loglevel",
-            "error",
-            ...(targetVersion.prerelease.length > 0 ? ["--save-exact"] : []),
-            ...dependencies.map((dependency) => `${dependency}@${targetVersion.version}`),
-            ...devDependencies.map((dependency) => `${dependency}@${targetVersion.version}`),
-        ]);
+        await executeCommand("npm", ["install", "--prefix", microservice, "--no-audit", "--loglevel", "error"]);
     }
 }
 
