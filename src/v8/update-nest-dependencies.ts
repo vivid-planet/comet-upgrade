@@ -19,8 +19,6 @@ export default async function updateNestDependencies() {
     packageJson.updateDependency("@nestjs/common", "^10.0.0");
     packageJson.updateDependency("@nestjs/core", "^10.0.0");
     packageJson.updateDependency("@nestjs/graphql", "^12.0.0");
-    // TODO remove when https://github.com/vivid-planet/comet/pull/2809 has been merged
-    packageJson.updateDependency("@nestjs/passport", "^10.0.0");
     packageJson.updateDependency("@nestjs/platform-express", "^10.0.0");
 
     packageJson.updateDependency("graphql", "^16.6.0");
