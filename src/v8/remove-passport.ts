@@ -10,7 +10,7 @@ export default async function removePassport() {
     }
 
     const packageJson = new PackageJson("api/package.json");
-    packageJson.updateDependency("@nestjs/jwt", "^10.2.0");
+    packageJson.addDependency("@nestjs/jwt", "^10.2.0");
     packageJson.removeDependency("@nestjs/passport");
     packageJson.removeDependency("passport");
     packageJson.removeDependency("passport-http");
