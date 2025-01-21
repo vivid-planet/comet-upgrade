@@ -40,7 +40,7 @@ async function main() {
     }
 
     if (!targetVersionArg.includes(".")) {
-        targetVersionArg = (await getLatestPackageVersion("@comet/admin")) ?? targetVersionArg;
+        targetVersionArg = (await getLatestPackageVersion("@comet/admin", semver.coerce(targetVersionArg)?.major)) ?? targetVersionArg;
     }
     const targetVersion = semver.coerce(targetVersionArg, { includePrerelease: true });
 
