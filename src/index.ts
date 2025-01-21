@@ -3,13 +3,31 @@ import path from "path";
 import semver, { SemVer } from "semver";
 
 import { executeCommand } from "./util/execute-command.util";
+import { getSmallestInstalledVersion } from "./util/get-installed-package-version";
 import { getLatestPackageVersion } from "./util/get-latest-package-version";
 
-const microservices = ["api", "admin", "site"] as const;
+export const microservices = ["api", "admin", "site"] as const;
 
 function microserviceExists(microservice: "api" | "admin" | "site") {
     return fs.existsSync(`${microservice}/package.json`);
 }
+
+const packages: Record<(typeof microservices)[number], string[]> = {
+    api: ["@comet/blocks-api", "@comet/cms-api"],
+    admin: [
+        "@comet/admin",
+        "@comet/admin-color-picker",
+        "@comet/admin-date-time",
+        "@comet/admin-icons",
+        "@comet/admin-react-select",
+        "@comet/admin-rte",
+        "@comet/admin-theme",
+        "@comet/blocks-admin",
+        "@comet/cms-admin",
+    ],
+    site: ["@comet/cms-site"],
+};
+const devDependencyPackages = ["@comet/cli", "@comet/eslint-config", "@comet/eslint-plugin"];
 
 async function main() {
     let targetVersionArg = process.argv[2];
@@ -59,7 +77,7 @@ async function main() {
         process.exit(-1);
     }
 
-    const currentVersion = getCurrentVersion();
+    const currentVersion = getSmallestInstalledVersion(packages, devDependencyPackages);
 
     console.info(`Upgrading from v${currentVersion} to v${targetVersion}`);
 
@@ -82,51 +100,7 @@ interface PackageJson {
     devDependencies?: Record<string, string | undefined>;
 }
 
-function getCurrentVersion() {
-    if (!microserviceExists("admin")) {
-        console.error(`File 'admin/package.json' doesn't exist. Make sure to call the script in the root of your project`);
-        process.exit(-1);
-    }
-
-    const packageJson = JSON.parse(fs.readFileSync("admin/package.json").toString()) as PackageJson;
-
-    const versionRange = packageJson.dependencies?.["@comet/admin"];
-
-    if (versionRange === undefined) {
-        console.error(`Package '@comet/admin' isn't listed as a dependency. Is this a Comet DXP project?`);
-        process.exit(-1);
-    }
-
-    // ^3.0.0 | ~3.0.0 | 3.0.0-canary -> 3.0.0
-    const versionMatches = versionRange.match(/\d+\.\d+\.\d+/);
-
-    if (versionMatches === null) {
-        console.error(`Unsupported version range '${versionRange}'. Example range: ^3.0.0`);
-        process.exit(-1);
-    }
-
-    const version = versionMatches[0];
-
-    return semver.major(version);
-}
-
 async function updateDependencies(targetVersion: SemVer) {
-    const packages: Record<(typeof microservices)[number], string[]> = {
-        api: ["@comet/blocks-api", "@comet/cms-api"],
-        admin: [
-            "@comet/admin",
-            "@comet/admin-color-picker",
-            "@comet/admin-date-time",
-            "@comet/admin-icons",
-            "@comet/admin-react-select",
-            "@comet/admin-rte",
-            "@comet/admin-theme",
-            "@comet/blocks-admin",
-            "@comet/cms-admin",
-        ],
-        site: ["@comet/cms-site"],
-    };
-
     for (const microservice of microservices) {
         if (!microserviceExists(microservice)) {
             console.warn(`File '${microservice}/package.json' doesn't exist. Skipping microservice`);
@@ -137,9 +111,7 @@ async function updateDependencies(targetVersion: SemVer) {
 
         const dependencies = packages[microservice].filter((packageName) => packageJson.dependencies?.[packageName] !== undefined);
 
-        const devDependencies = ["@comet/cli", "@comet/eslint-config", "@comet/eslint-plugin"].filter(
-            (packageName) => packageJson.devDependencies?.[packageName] !== undefined,
-        );
+        const devDependencies = devDependencyPackages.filter((packageName) => packageJson.devDependencies?.[packageName] !== undefined);
 
         if (dependencies.length === 0 && devDependencies.length === 0) {
             console.warn(`Microservice '${microservice}' has no Comet DXP dependencies. Skipping install`);
