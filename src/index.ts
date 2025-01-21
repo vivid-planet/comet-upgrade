@@ -3,6 +3,7 @@ import path from "path";
 import semver, { SemVer } from "semver";
 
 import { executeCommand } from "./util/execute-command.util";
+import { getLatestPackageVersion } from "./util/get-latest-package-version";
 
 const microservices = ["api", "admin", "site"] as const;
 
@@ -11,7 +12,7 @@ function microserviceExists(microservice: "api" | "admin" | "site") {
 }
 
 async function main() {
-    const targetVersionArg = process.argv[2];
+    let targetVersionArg = process.argv[2];
 
     if (targetVersionArg === undefined) {
         console.error("Missing target version! Usage: npx @comet/upgrade <version>");
@@ -38,6 +39,9 @@ async function main() {
         return;
     }
 
+    if (!targetVersionArg.includes(".")) {
+        targetVersionArg = (await getLatestPackageVersion("@comet/admin")) ?? targetVersionArg;
+    }
     const targetVersion = semver.coerce(targetVersionArg, { includePrerelease: true });
 
     if (!targetVersion) {
