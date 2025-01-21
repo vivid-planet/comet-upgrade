@@ -4,6 +4,8 @@ import { Project, SyntaxKind } from "ts-morph";
 
 import { executeCommand } from "../util/execute-command.util";
 
+export const version = "7.6.0";
+
 export default async function addSitePreviewSecret() {
     updateApiFiles1();
     updateApiFiles2();
