@@ -77,11 +77,16 @@ async function main() {
         process.exit(-1);
     }
 
-    const currentVersion = getSmallestInstalledVersion(packages, devDependencyPackages);
+    const currentVersion = semver.coerce(getSmallestInstalledVersion(packages, devDependencyPackages));
+
+    if (!currentVersion) {
+        console.error("Failed to determine current version. Exiting.");
+        process.exit(-1);
+    }
 
     console.info(`Upgrading from v${currentVersion} to v${targetVersion}`);
 
-    const upgradeScripts = await findUpgradeScripts(targetVersionFolder);
+    const upgradeScripts = await findUpgradeScripts(targetVersion, currentVersion);
 
     const beforeInstallScripts = upgradeScripts.filter((script) => script.stage === "before-install");
     await runUpgradeScripts(beforeInstallScripts);
@@ -136,24 +141,35 @@ type UpgradeScript = {
     name: string;
     stage: "before-install" | "after-install";
     script: () => Promise<void>;
+    version?: string;
 };
 
-async function findUpgradeScripts(targetVersionFolder: string): Promise<UpgradeScript[]> {
-    const scripts: UpgradeScript[] = [];
+async function findUpgradeScripts(targetVersion: SemVer, currentVersion: SemVer): Promise<UpgradeScript[]> {
+    const targetVersionFolder = `v${targetVersion.major}`;
+
+    const existingScripts: UpgradeScript[] = [];
 
     const scriptsFolder = path.join(__dirname, targetVersionFolder);
 
     for (const fileName of fs.readdirSync(scriptsFolder)) {
         const module = await import(path.join(__dirname, targetVersionFolder, fileName));
 
-        scripts.push({
+        existingScripts.push({
             name: fileName,
             stage: module.stage ?? "after-install",
             // Need default.default because of ESM interoperability with CommonJS.
             // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
             script: module.default.default,
+            version: module.version,
         });
     }
+
+    const scripts = existingScripts.filter((script) => {
+        if (script.version) {
+            return semver.gt(script.version, currentVersion.version) && semver.lte(script.version, targetVersion.version);
+        }
+        return true;
+    });
 
     return scripts;
 }
