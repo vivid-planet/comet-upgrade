@@ -20,7 +20,6 @@ export async function getLatestPackageVersion(packageName: string, majorVersion?
 
         return latestForMajor || null;
     } catch (error) {
-        console.error(`Failed to fetch package info for ${packageName}: ${error}`);
-        return null;
+        throw new Error(`Failed to fetch package info for ${packageName}: ${error}`);
     }
 }
