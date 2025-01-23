@@ -27,15 +27,15 @@ export default async function useGraphqlScalars() {
         }
 
         // replace default imports (which is GraphQLJSON) from graphql-type-json. Because of the default import, the name can be anything.
-        const defaultIncludeMatches = fileContent.match(/import ([a-zA-Z]+) from "graphql-type-json";/);
-        if (defaultIncludeMatches) {
+        const defaultImportMatches = fileContent.match(/import ([a-zA-Z]+) from "graphql-type-json";/);
+        if (defaultImportMatches) {
             // replace default import
             fileContent = fileContent.replace(
-                new RegExp(`import ${defaultIncludeMatches[1]} from "graphql-type-json";`, "g"),
+                new RegExp(`import ${defaultImportMatches[1]} from "graphql-type-json";`, "g"),
                 `import { GraphQLJSON } from "graphql-scalars";`,
             );
             // replace all usages of the default import
-            fileContent = fileContent.replace(new RegExp(`${defaultIncludeMatches[1]}`, "g"), "GraphQLJSON");
+            fileContent = fileContent.replace(new RegExp(`${defaultImportMatches[1]}`, "g"), "GraphQLJSON");
         }
 
         // replace the rest
