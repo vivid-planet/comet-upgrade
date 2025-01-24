@@ -1,6 +1,6 @@
 import semver from "semver";
 
-export async function getLatestPackageVersion(packageName: string, majorVersion?: number): Promise<string | null> {
+export async function getLatestPackageVersion(packageName: string, majorVersion?: number): Promise<string> {
     const url = `https://registry.npmjs.org/${packageName}`;
 
     try {
@@ -18,7 +18,7 @@ export async function getLatestPackageVersion(packageName: string, majorVersion?
         const versions: string[] = Object.keys(packageInfo.versions);
         const latestForMajor = versions.filter((version) => semver.satisfies(version, `^${majorVersion}.0.0`)).sort(semver.rcompare)[0];
 
-        return latestForMajor || null;
+        return latestForMajor;
     } catch (error) {
         throw new Error(`Failed to fetch package info for ${packageName}: ${error}`);
     }
