@@ -1,4 +1,4 @@
-import { PackageJson } from "@src/util/package-json.util";
+import { PackageJson } from "../util/package-json.util";
 import { existsSync } from "fs";
 
 export const stage = "before-install";
