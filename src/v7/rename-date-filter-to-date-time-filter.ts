@@ -3,6 +3,8 @@ import { glob } from "glob";
 
 import { formatCode } from "../util/format-code.util";
 
+export const version = "7.0.0";
+
 // Renames DateFilter to DateTimeFilter
 export default async function renameDateFilterToDateTimeFilter() {
     const files: string[] = glob.sync(["api/src/**/*.ts"]);

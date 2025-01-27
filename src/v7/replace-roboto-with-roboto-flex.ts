@@ -3,6 +3,8 @@ import { readFile, writeFile } from "fs/promises";
 import { executeCommand } from "../util/execute-command.util";
 import { formatCode } from "../util/format-code.util";
 
+export const version = "7.0.0";
+
 /**
  * Replaces the old font package "Roboto" with the new "Roboto Flex"
  */

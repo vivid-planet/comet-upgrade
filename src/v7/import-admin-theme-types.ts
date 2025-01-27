@@ -3,6 +3,8 @@ import { readFile, writeFile } from "fs/promises";
 
 import { formatCode } from "../util/format-code.util";
 
+export const version = "7.0.0";
+
 /**
  * Imports types from `@comet/admin-theme` in vendors.d.ts to allow using custom theme variants and colors
  */

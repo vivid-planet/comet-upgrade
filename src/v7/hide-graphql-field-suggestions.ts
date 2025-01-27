@@ -1,5 +1,7 @@
 import { Project, SyntaxKind } from "ts-morph";
 
+export const version = "7.0.0";
+
 /**
  * Adds the `formatError` property to `GraphQLModule` options to hide `GraphQL` field suggestions for non dev environments.
  */
