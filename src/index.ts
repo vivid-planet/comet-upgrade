@@ -3,31 +3,14 @@ import path from "path";
 import semver, { SemVer } from "semver";
 
 import { executeCommand } from "./util/execute-command.util";
-import { getSmallestInstalledVersion } from "./util/get-installed-package-version";
+import { getInstalledPackageVersion } from "./util/get-installed-package-version";
 import { getLatestPackageVersion } from "./util/get-latest-package-version";
 
-export const microservices = ["api", "admin", "site"] as const;
+const microservices = ["api", "admin", "site"] as const;
 
 function microserviceExists(microservice: "api" | "admin" | "site") {
     return fs.existsSync(`${microservice}/package.json`);
 }
-
-const packages: Record<(typeof microservices)[number], string[]> = {
-    api: ["@comet/blocks-api", "@comet/cms-api"],
-    admin: [
-        "@comet/admin",
-        "@comet/admin-color-picker",
-        "@comet/admin-date-time",
-        "@comet/admin-icons",
-        "@comet/admin-react-select",
-        "@comet/admin-rte",
-        "@comet/admin-theme",
-        "@comet/blocks-admin",
-        "@comet/cms-admin",
-    ],
-    site: ["@comet/cms-site"],
-};
-const devDependencyPackages = ["@comet/cli", "@comet/eslint-config", "@comet/eslint-plugin"];
 
 async function main() {
     let targetVersionArg = process.argv[2];
@@ -77,7 +60,7 @@ async function main() {
         process.exit(-1);
     }
 
-    const currentVersion = semver.coerce(getSmallestInstalledVersion(packages, devDependencyPackages));
+    const currentVersion = semver.coerce(getInstalledPackageVersion("@comet/admin", "admin"));
 
     if (!currentVersion) {
         console.error("Failed to determine current version. Exiting.");
@@ -106,6 +89,22 @@ interface PackageJson {
 }
 
 async function updateDependencies(targetVersion: SemVer) {
+    const packages: Record<(typeof microservices)[number], string[]> = {
+        api: ["@comet/blocks-api", "@comet/cms-api"],
+        admin: [
+            "@comet/admin",
+            "@comet/admin-color-picker",
+            "@comet/admin-date-time",
+            "@comet/admin-icons",
+            "@comet/admin-react-select",
+            "@comet/admin-rte",
+            "@comet/admin-theme",
+            "@comet/blocks-admin",
+            "@comet/cms-admin",
+        ],
+        site: ["@comet/cms-site"],
+    };
+
     for (const microservice of microservices) {
         if (!microserviceExists(microservice)) {
             console.warn(`File '${microservice}/package.json' doesn't exist. Skipping microservice`);
@@ -116,7 +115,9 @@ async function updateDependencies(targetVersion: SemVer) {
 
         const dependencies = packages[microservice].filter((packageName) => packageJson.dependencies?.[packageName] !== undefined);
 
-        const devDependencies = devDependencyPackages.filter((packageName) => packageJson.devDependencies?.[packageName] !== undefined);
+        const devDependencies = ["@comet/cli", "@comet/eslint-config", "@comet/eslint-plugin"].filter(
+            (packageName) => packageJson.devDependencies?.[packageName] !== undefined,
+        );
 
         if (dependencies.length === 0 && devDependencies.length === 0) {
             console.warn(`Microservice '${microservice}' has no Comet DXP dependencies. Skipping install`);
