@@ -1,6 +1,8 @@
 import { glob } from "glob";
 import { Project, SyntaxKind } from "ts-morph";
 
+export const version = "8.0.0";
+
 /**
  * This codemod changes `muiGridSortToGql` method from @comet/admin package.
  *

@@ -1,6 +1,8 @@
 import { existsSync } from "fs";
 import { Project, SyntaxKind } from "ts-morph";
 
+export const version = "8.0.0";
+
 /**
  * Removes the GraphQL client/fetch from the site preview handlers
  *

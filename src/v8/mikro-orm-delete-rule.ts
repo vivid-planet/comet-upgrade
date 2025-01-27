@@ -1,6 +1,8 @@
 import { readFile, writeFile } from "fs/promises";
 import { glob } from "glob";
 
+export const version = "8.0.0";
+
 /**
  * onDelete has been renamed to deleteRule.
  * See https://mikro-orm.io/docs/upgrading-v5-to-v6#renames.

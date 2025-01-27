@@ -1,6 +1,8 @@
 import { readFile, writeFile } from "fs/promises";
 import { glob } from "glob";
 
+export const version = "8.0.0";
+
 /**
  * Custom type has been removed in favor of just type.
  * See https://mikro-orm.io/docs/upgrading-v5-to-v6#removed-propertyoptionscustomtype-in-favour-of-just-type.

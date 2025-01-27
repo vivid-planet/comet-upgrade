@@ -1,5 +1,6 @@
 import { Project, SyntaxKind } from "ts-morph";
 
+export const version = "8.0.0";
 export default async function removeMuiDataGridErrorProp() {
     console.log("Remove error prop from DataGrid and DataGridPro components");
 

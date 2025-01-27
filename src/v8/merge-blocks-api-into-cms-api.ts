@@ -2,6 +2,8 @@ import { readFile, writeFile } from "fs/promises";
 import { glob } from "glob";
 import { Project } from "ts-morph";
 
+export const version = "8.0.0";
+
 const renamedExports = {
     getMostSignificantPreviewImageUrlTemplate: "getMostSignificantPreviewImageUrlTemplateFromBlock",
     getPreviewImageUrlTemplates: "getPreviewImageUrlTemplatesFromBlock",

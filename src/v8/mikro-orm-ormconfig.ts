@@ -1,5 +1,7 @@
 import { Project, SyntaxKind } from "ts-morph";
 
+export const version = "8.0.0";
+
 /**
  * Wrap the config in createOrmConfig with defineConfig
  */
