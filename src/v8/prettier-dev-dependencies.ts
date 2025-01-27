@@ -4,9 +4,9 @@ import { existsSync } from "fs";
 export const stage = "before-install";
 
 /**
- * Updates prettier to v3 and applies prettier changes to all source files
+ * Updates prettier to v3
  */
-export default async function updatePrettierAndUpdateSourceStyles() {
+export default async function updatePrettier() {
     if (existsSync("package.json")) {
         console.log("🚀 Update prettier to v3.4.2 in root");
         const packageJson = new PackageJson("package.json");
