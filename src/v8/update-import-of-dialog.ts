@@ -1,6 +1,7 @@
 import { glob } from "glob";
 import { Project } from "ts-morph";
 
+export const version = "8.0.0";
 export default async function updateImportOfDialog() {
     const project = new Project({ tsConfigFilePath: "./admin/tsconfig.json" });
     const files: string[] = glob.sync(["admin/src/**/*.tsx"]);

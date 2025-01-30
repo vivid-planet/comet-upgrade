@@ -2,6 +2,8 @@ import { readFile } from "fs/promises";
 import { glob } from "glob";
 import { Project } from "ts-morph";
 
+export const version = "7.0.0";
+
 /**
  * Replaces the import of `GridColDef` from `@mui/x-data-grid*` with `GridColDef` from `@comet/admin`.
  */

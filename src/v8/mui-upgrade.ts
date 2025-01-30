@@ -3,6 +3,8 @@ import { existsSync } from "fs";
 import { executeCommand } from "../util/execute-command.util";
 import { updateDependencyVersion } from "../util/update-dependency-version.util";
 
+export const version = "8.0.0";
+
 const adminPackageJsonPath = "admin/package.json";
 
 export default async function updateMuiVersion() {

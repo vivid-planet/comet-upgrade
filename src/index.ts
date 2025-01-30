@@ -3,6 +3,7 @@ import path from "path";
 import semver, { SemVer } from "semver";
 
 import { executeCommand } from "./util/execute-command.util";
+import { getInstalledPackageVersion } from "./util/get-installed-package-version";
 import { getLatestPackageVersion } from "./util/get-latest-package-version";
 
 const microservices = ["api", "admin", "site"] as const;
@@ -59,11 +60,16 @@ async function main() {
         process.exit(-1);
     }
 
-    const currentVersion = getCurrentVersion();
+    const currentVersion = semver.coerce(getInstalledPackageVersion("@comet/admin", "admin"));
+
+    if (!currentVersion) {
+        console.error("Failed to determine current version. Exiting.");
+        process.exit(-1);
+    }
 
     console.info(`Upgrading from v${currentVersion} to v${targetVersion}`);
 
-    const upgradeScripts = await findUpgradeScripts(targetVersionFolder);
+    const upgradeScripts = await findUpgradeScripts(targetVersion, currentVersion);
 
     const beforeInstallScripts = upgradeScripts.filter((script) => script.stage === "before-install");
     await runUpgradeScripts(beforeInstallScripts);
@@ -80,34 +86,6 @@ async function main() {
 interface PackageJson {
     dependencies?: Record<string, string | undefined>;
     devDependencies?: Record<string, string | undefined>;
-}
-
-function getCurrentVersion() {
-    if (!microserviceExists("admin")) {
-        console.error(`File 'admin/package.json' doesn't exist. Make sure to call the script in the root of your project`);
-        process.exit(-1);
-    }
-
-    const packageJson = JSON.parse(fs.readFileSync("admin/package.json").toString()) as PackageJson;
-
-    const versionRange = packageJson.dependencies?.["@comet/admin"];
-
-    if (versionRange === undefined) {
-        console.error(`Package '@comet/admin' isn't listed as a dependency. Is this a Comet DXP project?`);
-        process.exit(-1);
-    }
-
-    // ^3.0.0 | ~3.0.0 | 3.0.0-canary -> 3.0.0
-    const versionMatches = versionRange.match(/\d+\.\d+\.\d+/);
-
-    if (versionMatches === null) {
-        console.error(`Unsupported version range '${versionRange}'. Example range: ^3.0.0`);
-        process.exit(-1);
-    }
-
-    const version = versionMatches[0];
-
-    return semver.major(version);
 }
 
 async function updateDependencies(targetVersion: SemVer) {
@@ -164,24 +142,35 @@ type UpgradeScript = {
     name: string;
     stage: "before-install" | "after-install";
     script: () => Promise<void>;
+    version?: string;
 };
 
-async function findUpgradeScripts(targetVersionFolder: string): Promise<UpgradeScript[]> {
-    const scripts: UpgradeScript[] = [];
+async function findUpgradeScripts(targetVersion: SemVer, currentVersion: SemVer): Promise<UpgradeScript[]> {
+    const targetVersionFolder = `v${targetVersion.major}`;
+
+    const existingScripts: UpgradeScript[] = [];
 
     const scriptsFolder = path.join(__dirname, targetVersionFolder);
 
     for (const fileName of fs.readdirSync(scriptsFolder)) {
         const module = await import(path.join(__dirname, targetVersionFolder, fileName));
 
-        scripts.push({
+        existingScripts.push({
             name: fileName,
             stage: module.stage ?? "after-install",
             // Need default.default because of ESM interoperability with CommonJS.
             // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
             script: module.default.default,
+            version: module.version,
         });
     }
+
+    const scripts = existingScripts.filter((script) => {
+        if (script.version) {
+            return semver.gt(script.version, currentVersion.version) && semver.lte(script.version, targetVersion.version);
+        }
+        return true;
+    });
 
     return scripts;
 }

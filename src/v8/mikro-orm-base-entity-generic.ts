@@ -1,6 +1,8 @@
 import { readFile, writeFile } from "fs/promises";
 import { glob } from "glob";
 
+export const version = "8.0.0";
+
 /**
  * BaseEntity no longer has generic type arguments.
  * See https://mikro-orm.io/docs/upgrading-v5-to-v6#baseentity-no-longer-has-generic-type-arguments.

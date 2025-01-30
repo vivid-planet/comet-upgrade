@@ -4,6 +4,8 @@ import { glob } from "glob";
 import { executeCommand } from "../util/execute-command.util";
 import { formatCode } from "../util/format-code.util";
 
+export const version = "7.0.0";
+
 export default async function useGraphqlScalars() {
     // replace graphql-type-json with graphql-scalars in api/package.json
     const packageJson = await readFile(`api/package.json`);

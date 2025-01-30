@@ -2,6 +2,8 @@ import { readFile, writeFile } from "fs/promises";
 
 import { formatCode } from "../util/format-code.util";
 
+export const version = "7.12.0";
+
 /**
  * Replaces the old ExceptionInterceptor with the new ExceptionFilter
  */
