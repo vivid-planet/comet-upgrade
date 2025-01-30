@@ -35,7 +35,6 @@
         "ts-morph": "^22.0.0"
     },
     "devDependencies": {
-        "eslint-plugin-prettier": "^4.2.1",
         "@comet/eslint-config": "^3.2.1",
         "@tsconfig/node20": "^20.1.4",
         "@types/node": "^20.0.0",
