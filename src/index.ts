@@ -11,6 +11,8 @@ function microserviceExists(microservice: "api" | "admin" | "site") {
     return fs.existsSync(`${microservice}/package.json`);
 }
 
+const isLocalDevelopment = !process.argv[1].includes("/_npx");
+
 async function main() {
     let targetVersionArg = process.argv[2];
 
@@ -195,6 +197,10 @@ async function runUpgradeScripts(scripts: UpgradeScript[]) {
 async function runUpgradeScript(script: UpgradeScript) {
     try {
         await script.script();
+        if (isLocalDevelopment) {
+            // run upgrade scripts twice locally to ensure that the scripts are idempotent
+            await script.script();
+        }
     } catch (error) {
         console.error(`Script '${script.name}' failed to execute. See original error below`);
         console.error(error);
