@@ -39,7 +39,12 @@ export default config;`;
 export const stage = "before-install";
 
 /**
- * Updates eslint to v9
+ * This Updates script is doing following:
+ *
+ * - updates eslint to version 9.
+ * - creates new eslint.config.mjs file with default configuration
+ * - copies content from .eslint.json to new eslint.config.mjs as a comment
+ * - deletes old .eslint.json file
  */
 export default async function updateEslint() {
     if (existsSync("admin/package.json")) {
