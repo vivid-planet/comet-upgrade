@@ -1,12 +1,19 @@
 import { existsSync } from "fs";
-import { readFile, writeFile } from "fs/promises";
+
+import { PackageJson } from "../util/package-json.util";
 
 export const stage = "before-install";
 
 export default async function removeBlocksPackages() {
     if (existsSync("api/package.json")) {
-        let fileContent = (await readFile("api/package.json")).toString();
-        fileContent = fileContent.replace(/\n\s*"@comet\/blocks-api".*$/m, "");
-        await writeFile("api/package.json", fileContent);
+        const packageJson = new PackageJson("api/package.json");
+        packageJson.removeDependency("@comet/blocks-api");
+        packageJson.save();
+    }
+
+    if (existsSync("admin/package.json")) {
+        const packageJson = new PackageJson("admin/package.json");
+        packageJson.removeDependency("@comet/blocks-admin");
+        packageJson.save();
     }
 }
