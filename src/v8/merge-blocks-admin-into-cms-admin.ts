@@ -45,7 +45,7 @@ export default async function mergeBlocksAdminIntoCmsAdmin() {
 
         blocksAdminImport.remove();
 
-        const cmsAdminImport = sourceFile.getImportDeclaration((declaration) => declaration.getModuleSpecifierValue().includes("@comet/cms-api"));
+        const cmsAdminImport = sourceFile.getImportDeclaration((declaration) => declaration.getModuleSpecifierValue().includes("@comet/cms-admin"));
 
         if (cmsAdminImport) {
             cmsAdminImport.addNamedImports(blocksAdminImports);
