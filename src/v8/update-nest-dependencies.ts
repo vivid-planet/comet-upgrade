@@ -23,7 +23,6 @@ export default async function updateNestDependencies() {
 
     packageJson.updateDependency("graphql", "^16.6.0");
 
-    packageJson.updateDependency("nestjs-console", "^9.0.0");
     packageJson.updateDependency("@golevelup/nestjs-discovery", "^4.0.0");
 
     packageJson.updateDependency("@nestjs/cli", "^10.0.0");
