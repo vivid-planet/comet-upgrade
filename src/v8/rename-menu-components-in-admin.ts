@@ -9,7 +9,7 @@ const renameMap: Record<string, string> = {
     MenuCollapsibleItem: "MainNavigationCollapsibleItem",
     MenuCollapsibleItemClassKey: "MainNavigationCollapsibleItemClassKey",
     MenuCollapsibleItemProps: "MainNavigationCollapsibleItemProps",
-    MenuContext: "MainNavigationContext",
+    MenuContext: "useMainNavigation",
     MenuItem: "MainNavigationItem",
     MenuItemAnchorLink: "MainNavigationItemAnchorLink",
     MenuItemAnchorLinkProps: "MainNavigationItemAnchorLinkProps",
@@ -46,12 +46,27 @@ export default async function renameComponents() {
                 if (namedImport) {
                     namedImport.setName(newName);
 
-                    const references = sourceFile
-                        .getDescendantsOfKind(ts.SyntaxKind.Identifier)
-                        .filter((identifier) => identifier.getText() === oldName);
+                    if (oldName === "MenuContext") {
+                        const useContextCalls = sourceFile.getDescendantsOfKind(ts.SyntaxKind.CallExpression).filter((call) => {
+                            const expression = call.getExpression();
+                            return (
+                                expression.getText() === "useContext" &&
+                                call.getArguments().length === 1 &&
+                                call.getArguments()[0].getText() === "MenuContext"
+                            );
+                        });
 
-                    for (const reference of references) {
-                        reference.replaceWithText(newName);
+                        for (const call of useContextCalls) {
+                            call.replaceWithText("useMainNavigation()");
+                        }
+                    } else {
+                        const references = sourceFile
+                            .getDescendantsOfKind(ts.SyntaxKind.Identifier)
+                            .filter((identifier) => identifier.getText() === oldName);
+
+                        for (const reference of references) {
+                            reference.replaceWithText(newName);
+                        }
                     }
                 }
             }
