@@ -3,10 +3,21 @@ import { glob } from "glob";
 import { Project } from "ts-morph";
 
 const renamedExports = {
-    createCompositeSetting: `createCompositeBlockField`,
-    createCompositeSettings: `createCompositeBlockFields`,
-    IPreviewContext: `BlockPreviewContext`,
-    PreviewStateInterface: `BlockPreviewStateInterface`,
+    createCompositeSetting: "createCompositeBlockField",
+    createCompositeSettings: "createCompositeBlockFields",
+    IPreviewContext: "BlockPreviewContext",
+    PreviewStateInterface: "BlockPreviewStateInterface",
+    AdminComponentPart: "BlockAdminComponentPart",
+    AdminComponentButton: "BlockAdminComponentButton",
+    AdminComponentNestedButton: "BlockAdminComponentNestedButton",
+    AdminComponentPaper: "BlockAdminComponentPaper",
+    useAdminComponentPaper: "useBlockAdminComponentPaper",
+    AdminComponentRoot: "BlockAdminComponentRoot",
+    AdminComponentSection: "BlockAdminComponentSection",
+    AdminComponentSectionGroup: "BlockAdminComponentSectionGroup",
+    AdminTabLabel: "BlockAdminTabLabel",
+    AdminTabsProps: "BlockAdminTabsProps",
+    AdminTabs: "BlockAdminTabs",
 };
 
 export default async function mergeBlocksAdminIntoCmsAdmin() {
