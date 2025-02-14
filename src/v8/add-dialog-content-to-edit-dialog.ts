@@ -6,17 +6,18 @@ export default async function addDialogContentToEditDialog() {
 
     sourceFiles.forEach((sourceFile) => {
         const importDeclarations = sourceFile.getImportDeclarations();
-        const cometImport = importDeclarations.find(
-            (importDeclaration) => importDeclaration.getModuleSpecifier().getLiteralValue() === "@comet/admin",
+
+        const muiImport = importDeclarations.find(
+            (importDeclaration) => importDeclaration.getModuleSpecifier().getLiteralValue() === "@mui/material",
         );
 
-        let hasEditDialogImport = false;
-
-        if (cometImport) {
-            hasEditDialogImport = cometImport.getNamedImports().some((namedImport) => namedImport.getName() === "EditDialog");
-            if (hasEditDialogImport) {
-                cometImport.addNamedImport("DialogContent");
-            }
+        if (!muiImport) {
+            sourceFile.addImportDeclaration({
+                moduleSpecifier: "@mui/material",
+                namedImports: ["DialogContent"],
+            });
+        } else if (!muiImport.getNamedImports().some((namedImport) => namedImport.getName() === "DialogContent")) {
+            muiImport.addNamedImport("DialogContent");
         }
 
         const jsxElements = sourceFile.getDescendantsOfKind(SyntaxKind.JsxElement);
