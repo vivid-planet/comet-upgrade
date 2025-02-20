@@ -2,26 +2,25 @@ import { glob } from "glob";
 import { Project, ts } from "ts-morph";
 
 const renameMap: Record<string, string> = {
-    IMenuContent: "MainNavigationContextValue",
-    IWithMenu: "WithMainNavigation",
     Menu: "MainNavigation",
+    MenuProps: "MainNavigationProps",
     MenuClassKey: "MainNavigationClassKey",
-    MenuCollapsibleItem: "MainNavigationCollapsibleItem",
-    MenuCollapsibleItemClassKey: "MainNavigationCollapsibleItemClassKey",
-    MenuCollapsibleItemProps: "MainNavigationCollapsibleItemProps",
-    MenuContext: "useMainNavigation",
     MenuItem: "MainNavigationItem",
+    MenuItemProps: "MainNavigationItemProps",
+    MenuItemClassKey: "MainNavigationItemClassKey",
+    MenuCollapsibleItem: "MainNavigationCollapsibleItem",
+    MenuCollapsibleItemProps: "MainNavigationCollapsibleItemProps",
+    MenuCollapsibleItemClassKey: "MainNavigationCollapsibleItemClassKey",
+    IWithMenu: "WithMainNavigation",
+    withMenu: "withMainNavigation",
     MenuItemAnchorLink: "MainNavigationItemAnchorLink",
     MenuItemAnchorLinkProps: "MainNavigationItemAnchorLinkProps",
-    MenuItemClassKey: "MainNavigationItemClassKey",
     MenuItemGroup: "MainNavigationItemGroup",
     MenuItemGroupClassKey: "MainNavigationItemGroupClassKey",
     MenuItemGroupProps: "MainNavigationItemGroupProps",
-    MenuItemProps: "MainNavigationItemProps",
     MenuItemRouterLink: "MainNavigationItemRouterLink",
     MenuItemRouterLinkProps: "MainNavigationItemRouterLinkProps",
-    MenuProps: "MainNavigationProps",
-    withMenu: "withMainNavigation",
+    MenuContext: "useMainNavigation",
 };
 
 export default async function renameComponents() {
