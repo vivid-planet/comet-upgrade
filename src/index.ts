@@ -11,7 +11,8 @@ function microserviceExists(microservice: "api" | "admin" | "site") {
     return fs.existsSync(`${microservice}/package.json`);
 }
 
-const isLocalDevelopment = !process.argv[1].includes("/_npx");
+const isRunningViaNpx = Boolean(process.env.npm_execpath?.includes("npx"));
+const isLocalDevelopment = !isRunningViaNpx;
 
 async function main() {
     let targetVersionArg = process.argv[2];
@@ -19,6 +20,10 @@ async function main() {
     if (targetVersionArg === undefined) {
         console.error("Missing target version! Usage: npx @comet/upgrade <version>");
         process.exit(-1);
+    }
+
+    if (isLocalDevelopment) {
+        console.warn("Not running via npx -> assuming local development. Scripts will run twice to ensure idempotency.");
     }
 
     const isUpgradeScript = targetVersionArg.endsWith(".ts");
