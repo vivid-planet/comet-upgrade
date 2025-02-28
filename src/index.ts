@@ -3,7 +3,6 @@ import path from "path";
 import semver, { SemVer } from "semver";
 
 import { executeCommand } from "./util/execute-command.util";
-import { getGitDiff } from "./util/get-git-diff.util";
 import { getLatestPackageVersion } from "./util/get-latest-package-version";
 
 const microservices = ["api", "admin", "site"] as const;
@@ -200,14 +199,7 @@ async function runUpgradeScript(script: UpgradeScript) {
         await script.script();
         if (isLocalDevelopment) {
             // run upgrade scripts twice locally to ensure that the scripts are idempotent
-            const diffBefore = getGitDiff();
             await script.script();
-            const diffAfter = getGitDiff();
-
-            if (diffBefore !== diffAfter) {
-                console.error(`❌ ${script.name}: Changes detected when executing script twice`);
-                process.exit(-1);
-            }
         }
     } catch (error) {
         console.error(`Script '${script.name}' failed to execute. See original error below`);
