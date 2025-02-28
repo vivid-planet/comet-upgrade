@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import fs from "fs";
 import path from "path";
 import semver, { SemVer } from "semver";
@@ -223,5 +224,16 @@ function listTargetVersions() {
     const targetVersions = fs.readdirSync(__dirname).filter((entry) => entry.startsWith("v"));
     console.info(targetVersions.map((version) => `- ${version}`).join("\n"));
 }
+
+const originalError = console.error;
+const originalWarn = console.warn;
+
+console.error = (...args) => {
+    originalError(chalk.red(...args));
+};
+
+console.warn = (...args) => {
+    originalWarn(chalk.yellow(...args));
+};
 
 main();
