@@ -25,7 +25,7 @@ export default async function fixRimRafGeneratorScripts() {
 
     const apiPackageJson = new PackageJson("api/package.json");
 
-    apiPackageJson.addScript("api-generator", "rimraf 'src/*/generated' && comet-api-generator generate");
+    apiPackageJson.addScript("api-generator", "rimraf -g 'src/**/generated' && comet-api-generator generate");
 
     apiPackageJson.save();
 }
