@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import fs from "fs";
+import * as util from "node:util";
 import path from "path";
 import semver, { SemVer } from "semver";
 
@@ -229,11 +230,13 @@ const originalError = console.error;
 const originalWarn = console.warn;
 
 console.error = (...args) => {
-    originalError(chalk.red(...args));
+    const formattedArgs = args.map((arg) => (typeof arg === "object" ? util.inspect(arg, { depth: null, colors: true }) : chalk.red(arg)));
+    originalError(...formattedArgs);
 };
 
 console.warn = (...args) => {
-    originalWarn(chalk.yellow(...args));
+    const formattedArgs = args.map((arg) => (typeof arg === "object" ? util.inspect(arg, { depth: null, colors: true }) : chalk.yellow(arg)));
+    originalWarn(...formattedArgs);
 };
 
 main();
