@@ -77,7 +77,7 @@ export default async function updateEslint() {
 const updateDevDependenciesInPackageJsons = ({ packageJsonPath }: { packageJsonPath: string }) => {
     console.log(`🚀 Update eslint to v9.18.0 in ${packageJsonPath}`);
     const packageJson = new PackageJson(packageJsonPath);
-    packageJson.updateDependency("eslint", "^v9.18.0");
+    packageJson.updateDependency("eslint", "^9.18.0");
     packageJson.save();
 };
 
