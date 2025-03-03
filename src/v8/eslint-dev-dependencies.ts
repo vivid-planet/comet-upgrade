@@ -71,6 +71,15 @@ export default async function updateEslint() {
             fileContent: siteEslintConfig,
         });
         deleteOldEslintRc({ workingDirectory: "site/" });
+
+        // remove .eslintrc.cli.js
+        if (existsSync("site/.eslintrc.cli.js")) {
+            rmSync("site/.eslintrc.cli.js");
+            const packageJson = new PackageJson("site/package.json");
+            packageJson.removeScript("lint:eslint");
+            packageJson.addScript("lint:eslint", "eslint --max-warnings 0 src/ **/*.json --no-warn-ignored");
+            packageJson.save();
+        }
     }
 }
 
