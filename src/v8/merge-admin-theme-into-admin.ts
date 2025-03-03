@@ -2,9 +2,7 @@ import { existsSync, readFileSync, unlinkSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Project } from "ts-morph";
 
-import { PackageJson } from "../util/package-json.util";
-
-export default async function updateThemeImports() {
+export default async function mergeAdminThemeIntoAdmin() {
     const project = new Project({ tsConfigFilePath: "./admin/tsconfig.json" });
     const files: string[] = glob.sync(["admin/src/**/*.{ts,tsx}"]);
 
@@ -47,18 +45,6 @@ export default async function updateThemeImports() {
         }
 
         await sourceFile.save();
-    }
-
-    if (existsSync("admin/package.json")) {
-        const packageJson = new PackageJson("admin/package.json");
-        const themeVersion = packageJson.getDependencyVersion("@comet/admin-theme");
-        packageJson.removeDependency("@comet/admin-theme");
-
-        if (!packageJson.hasDependency("@comet/admin")) {
-            packageJson.addDependency("@comet/admin", themeVersion || "^8.0.0");
-        }
-
-        packageJson.save();
     }
 
     const vendorsPath = "admin/src/vendors.d.ts";
