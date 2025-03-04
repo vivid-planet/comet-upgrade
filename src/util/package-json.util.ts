@@ -52,4 +52,8 @@ export class PackageJson {
         this.json.scripts ??= {};
         this.json.scripts[name] = script;
     }
+
+    removeScript(name: string) {
+        delete this.json.scripts?.[name];
+    }
 }
