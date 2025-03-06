@@ -66,20 +66,24 @@ async function main() {
         process.exit(-1);
     }
 
-    const currentVersion = getCurrentVersion();
-
-    console.info(`Upgrading from v${currentVersion} to v${targetVersion}`);
+    const currentMajorVersion = getCurrentVersion();
+    console.info(`Upgrading from v${currentMajorVersion} to v${targetVersion}`);
 
     const upgradeScripts = await findUpgradeScripts(targetVersionFolder);
 
+    console.info("\n⚙️ Executing before install scripts\n");
     const beforeInstallScripts = upgradeScripts.filter((script) => script.stage === "before-install");
     await runUpgradeScripts(beforeInstallScripts);
+    console.info("\n☑️ Before install scripts finished\n");
 
-    console.info("Updating dependencies");
+    console.info("\n🔄 Updating dependencies\n");
     await updateDependencies(targetVersion);
+    console.info("\n☑️ Dependency update finished\n");
 
+    console.info("\n🚀 Executing after install scripts\n");
     const afterInstallScripts = upgradeScripts.filter((script) => script.stage === "after-install");
     await runUpgradeScripts(afterInstallScripts);
+    console.info("\n☑️ After install scripts finished\n");
 
     await runEslintFix();
 }
@@ -201,6 +205,7 @@ async function runUpgradeScripts(scripts: UpgradeScript[]) {
 
 async function runUpgradeScript(script: UpgradeScript) {
     try {
+        console.info(`📜 Running script '${script.name}'`);
         await script.script();
         if (isLocalDevelopment) {
             // run upgrade scripts twice locally to ensure that the scripts are idempotent
