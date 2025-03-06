@@ -6,7 +6,7 @@ import { PackageJson } from "../util/package-json.util";
 export const stage = "before-install";
 
 /**
- * Replace node with version 22 in .nvmrc
+ * Replace node with version 22 in .nvmrc and package.json files
  */
 export default async function replaceNodeWithV22Locally() {
     if (existsSync(".nvmrc")) {
