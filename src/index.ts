@@ -79,7 +79,7 @@ async function main() {
     console.info("\n☑️ Before install scripts finished\n");
 
     console.info("\n🔄 Updating dependencies\n");
-    await updateDependencies(targetVersion);
+    await updateDependencies(targetVersion, currentMajorVersion !== targetVersion.major);
     console.info("\n☑️ Dependency update finished\n");
 
     console.info("\n🚀 Executing after install scripts\n");
@@ -123,7 +123,7 @@ function getCurrentVersion() {
     return semver.major(version);
 }
 
-async function updateDependencies(targetVersion: SemVer) {
+async function updateDependencies(targetVersion: SemVer, isMajorUpdate = false) {
     const packages: Record<(typeof microservices)[number], string[]> = {
         api: ["@comet/blocks-api", "@comet/cms-api"],
         admin: [
@@ -157,6 +157,15 @@ async function updateDependencies(targetVersion: SemVer) {
         if (dependencies.length === 0 && devDependencies.length === 0) {
             console.warn(`Microservice '${microservice}' has no Comet DXP dependencies. Skipping install`);
             continue;
+        }
+
+        if (isMajorUpdate) {
+            if (fs.existsSync(`${microservice}/node_modules`)) {
+                fs.rmSync(`${microservice}/node_modules`, { recursive: true, force: true });
+            }
+            if (fs.existsSync(`${microservice}/package-lock.json`)) {
+                fs.rmSync(`${microservice}/package-lock.json`);
+            }
         }
 
         await executeCommand("npm", [
