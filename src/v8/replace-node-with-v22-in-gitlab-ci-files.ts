@@ -6,7 +6,7 @@ export const stage = "before-install";
 /**
  * Replace node with version 22 in .gitlab-ci yml files
  */
-export default async function ReplaceNodeWithV22InNvmrc() {
+export default async function replaceNodeWithV22InNvmrc() {
     const files = glob.sync("**/.gitlab-ci/*.yml", { nodir: true });
 
     for (const file of files) {
