@@ -6,8 +6,8 @@ import { executeCommand } from "../util/execute-command.util";
 
 export default async function addSitePreviewSecret() {
     updateApiFiles1();
-    updateApiFiles2();
-    updateApiFiles3();
+    await updateApiFiles2();
+    await updateApiFiles3();
     updateDotEnvFile();
     updateValuesTplFile();
     updateChart();
@@ -15,8 +15,6 @@ export default async function addSitePreviewSecret() {
 }
 
 function updateApiFiles1() {
-    console.log("Add sitePreviewSecret to api/src/config/environment-variables.ts ...");
-
     const project = new Project({ tsConfigFilePath: "./api/tsconfig.json" });
 
     const sourceFile = project.getSourceFile("api/src/config/environment-variables.ts");
@@ -30,6 +28,12 @@ function updateApiFiles1() {
         return;
     }
 
+    if (cls.getMember("SITE_PREVIEW_SECRET")) {
+        return;
+    }
+
+    console.log("Add sitePreviewSecret to api/src/config/environment-variables.ts ...");
+
     cls.addMember("\n@IsString()\n@MinLength(16)\nSITE_PREVIEW_SECRET: string;");
     sourceFile.saveSync();
 
@@ -37,8 +41,6 @@ function updateApiFiles1() {
 }
 
 async function updateApiFiles2() {
-    console.log("Add sitePreviewSecret to api/src/config/config.ts ...");
-
     const project = new Project({ tsConfigFilePath: "./api/tsconfig.json" });
 
     const sourceFile = project.getSourceFile("api/src/config/config.ts");
@@ -46,6 +48,19 @@ async function updateApiFiles2() {
         console.error("  Could not file file, make sure to add sitePreviewSecret: envVars.SITE_PREVIEW_SECRET");
         return;
     }
+
+    if (
+        sourceFile
+            .getFunction("createConfig")
+            ?.getBody()
+            ?.getDescendantsOfKind(SyntaxKind.ReturnStatement)[0]
+            .getChildrenOfKind(SyntaxKind.ObjectLiteralExpression)[0]
+            .getProperty("sitePreviewSecret")
+    ) {
+        return;
+    }
+
+    console.log("Add sitePreviewSecret to api/src/config/config.ts ...");
 
     sourceFile
         .getFunction("createConfig")
@@ -60,8 +75,6 @@ async function updateApiFiles2() {
 }
 
 async function updateApiFiles3() {
-    console.log("Add sitePreviewSecret to api/src/app.module.ts ...");
-
     const project = new Project({ tsConfigFilePath: "./api/tsconfig.json" });
 
     const sourceFile = project.getSourceFile("api/src/app.module.ts");
@@ -69,6 +82,21 @@ async function updateApiFiles3() {
         console.error("  Could not file file, make sure to add sitePreviewSecret to PageTreeModule");
         return;
     }
+
+    if (
+        sourceFile
+            .getClassOrThrow("AppModule")
+            .getMethodOrThrow("forRoot")
+            .getBody()
+            ?.getDescendantsOfKind(SyntaxKind.CallExpression)
+            .find((call) => call.getText().includes("PageTreeModule.forRoot"))
+            ?.getChildrenOfKind(SyntaxKind.ObjectLiteralExpression)[0]
+            .getProperty("sitePreviewSecret")
+    ) {
+        return;
+    }
+
+    console.log("Add sitePreviewSecret to api/src/app.module.ts ...");
 
     sourceFile
         .getClassOrThrow("AppModule")
@@ -85,14 +113,16 @@ async function updateApiFiles3() {
 }
 
 function updateDotEnvFile() {
-    console.log("Update .env");
     if (!fs.existsSync(".env")) {
         console.error("  could not find file, please make sure to add SITE_PREVIEW_SECRET manually");
         return;
     }
-    fs.appendFile(".env", `\nSITE_PREVIEW_SECRET=${crypto.randomBytes(8).toString("hex")}\n`, (err) => {
-        console.error(`  ${err}`);
-    });
+    if (fs.readFileSync(".env").includes("SITE_PREVIEW_SECRET")) {
+        return;
+    }
+
+    console.log("Update .env");
+    fs.appendFileSync(".env", `\nSITE_PREVIEW_SECRET=${crypto.randomBytes(8).toString("hex")}\n`);
     console.log("  finished");
 }
 
@@ -112,11 +142,15 @@ function updateValuesTplFile() {
     let sitePreviewLine = 0;
     let beginAuthproxyPreviewLine = 0;
     let endAuthproxyPreviewLine = 0;
+    let alreadyContainsSitePreviewSecret = false;
 
     lines.forEach((line, index) => {
         const match = line.match(/(\s*)(.*):/);
         if (match) {
             if (match[1].length / 2 === 0) currentSection = match[2];
+            if (currentSection === "api" && line.includes("SITE_PREVIEW_SECRET:")) {
+                alreadyContainsSitePreviewSecret = true;
+            }
             if (currentSection === "api" && match[2] === "secrets") {
                 sitePreviewLine = index;
             }
@@ -129,11 +163,18 @@ function updateValuesTplFile() {
         }
     });
 
-    if (sitePreviewLine) {
-        lines.splice(sitePreviewLine, 0, '    SITE_PREVIEW_SECRET: "{{ op://$OP_PREFIX-$OP_ENVIRONMENT/site-preview-secret-$APP_ENV/password }}"');
-    } else {
-        console.error("  Could not find api.secrets, please make sure to add SITE_PREVIEW_SECRET manually.");
+    if (!alreadyContainsSitePreviewSecret) {
+        if (sitePreviewLine) {
+            lines.splice(
+                sitePreviewLine,
+                0,
+                '    SITE_PREVIEW_SECRET: "{{ op://$OP_PREFIX-$OP_ENVIRONMENT/site-preview-secret-$APP_ENV/password }}"',
+            );
+        } else {
+            console.error("  Could not find api.secrets, please make sure to add SITE_PREVIEW_SECRET manually.");
+        }
     }
+
     if (beginAuthproxyPreviewLine && endAuthproxyPreviewLine) {
         lines.splice(beginAuthproxyPreviewLine, endAuthproxyPreviewLine - beginAuthproxyPreviewLine);
     } else {

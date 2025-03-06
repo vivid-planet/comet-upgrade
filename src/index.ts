@@ -11,12 +11,19 @@ function microserviceExists(microservice: "api" | "admin" | "site") {
     return fs.existsSync(`${microservice}/package.json`);
 }
 
+const isRunningViaNpx = Boolean(process.env.npm_execpath?.includes("npx"));
+const isLocalDevelopment = !isRunningViaNpx;
+
 async function main() {
     let targetVersionArg = process.argv[2];
 
     if (targetVersionArg === undefined) {
         console.error("Missing target version! Usage: npx @comet/upgrade <version>");
         process.exit(-1);
+    }
+
+    if (isLocalDevelopment) {
+        console.warn("Not running via npx -> assuming local development. Scripts will run twice to ensure idempotency.");
     }
 
     const isUpgradeScript = targetVersionArg.endsWith(".ts");
@@ -64,13 +71,19 @@ async function main() {
 
     const upgradeScripts = await findUpgradeScripts(targetVersionFolder);
 
+    console.info("\n⚙️ Executing before install scripts\n");
     const beforeInstallScripts = upgradeScripts.filter((script) => script.stage === "before-install");
     await runUpgradeScripts(beforeInstallScripts);
+    console.info("\n☑️ Before install scripts finished\n");
 
+    console.info("\n🔄 Updating dependencies\n");
     await updateDependencies(targetVersion, currentMajorVersion !== targetVersion.major);
+    console.info("\n☑️ Dependency update finished\n");
 
+    console.info("\n🚀 Executing after install scripts\n");
     const afterInstallScripts = upgradeScripts.filter((script) => script.stage === "after-install");
     await runUpgradeScripts(afterInstallScripts);
+    console.info("\n☑️ After install scripts finished\n");
 
     await runEslintFix();
 }
@@ -160,7 +173,7 @@ async function updateDependencies(targetVersion: SemVer, isMajorUpdate = false) 
             "--no-audit",
             "--loglevel",
             "error",
-            ...(targetVersion.prerelease.length > 0 ? ["--save-exact"] : []),
+            "--save-exact",
             ...dependencies.map((dependency) => `${dependency}@${targetVersion.version}`),
             ...devDependencies.map((dependency) => `${dependency}@${targetVersion.version}`),
         ]);
@@ -201,7 +214,12 @@ async function runUpgradeScripts(scripts: UpgradeScript[]) {
 
 async function runUpgradeScript(script: UpgradeScript) {
     try {
+        console.info(`📜 Running script '${script.name}'`);
         await script.script();
+        if (isLocalDevelopment) {
+            // run upgrade scripts twice locally to ensure that the scripts are idempotent
+            await script.script();
+        }
     } catch (error) {
         console.error(`Script '${script.name}' failed to execute. See original error below`);
         console.error(error);

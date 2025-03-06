@@ -44,6 +44,14 @@ export class PackageJson {
         delete this.json.devDependencies?.[name];
     }
 
+    getDependencyVersion(name: string): string | undefined {
+        return this.json.dependencies?.[name] || this.json.devDependencies?.[name];
+    }
+
+    hasDependency(name: string): boolean {
+        return !!(this.json.dependencies?.[name] || this.json.devDependencies?.[name]);
+    }
+
     save() {
         writeFileSync(this.path, JSON.stringify(this.json, null, 4));
     }
@@ -51,5 +59,9 @@ export class PackageJson {
     addScript(name: string, script: string) {
         this.json.scripts ??= {};
         this.json.scripts[name] = script;
+    }
+
+    removeScript(name: string) {
+        delete this.json.scripts?.[name];
     }
 }
