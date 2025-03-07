@@ -23,6 +23,12 @@ export default async function replaceCustomType() {
         .getInitializerIfKindOrThrow(SyntaxKind.CallExpression)
         .getArguments()[0];
 
+    for (const propertyAssignment of config.getDescendantsOfKind(SyntaxKind.PropertyAssignment)) {
+        if (propertyAssignment.getName() === "type") {
+            propertyAssignment.remove();
+        }
+    }
+
     config.replaceWithText(`defineConfig(${config.getText()})`);
 
     await sourceFile.save();
