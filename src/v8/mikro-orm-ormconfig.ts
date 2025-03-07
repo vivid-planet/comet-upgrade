@@ -12,6 +12,10 @@ export default async function replaceCustomType() {
         return;
     }
 
+    if (sourceFile.getText().includes("defineConfig")) {
+        return;
+    }
+
     sourceFile.addImportDeclaration({
         namedImports: ["defineConfig"],
         moduleSpecifier: "@mikro-orm/postgresql",
