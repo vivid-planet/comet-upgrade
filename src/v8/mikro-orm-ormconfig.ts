@@ -12,6 +12,10 @@ export default async function replaceCustomType() {
         return;
     }
 
+    if (sourceFile.getText().includes("defineConfig")) {
+        return;
+    }
+
     sourceFile.addImportDeclaration({
         namedImports: ["defineConfig"],
         moduleSpecifier: "@mikro-orm/postgresql",
@@ -22,6 +26,12 @@ export default async function replaceCustomType() {
         .getDeclarations()[0]
         .getInitializerIfKindOrThrow(SyntaxKind.CallExpression)
         .getArguments()[0];
+
+    for (const propertyAssignment of config.getDescendantsOfKind(SyntaxKind.PropertyAssignment)) {
+        if (propertyAssignment.getName() === "type") {
+            propertyAssignment.remove();
+        }
+    }
 
     config.replaceWithText(`defineConfig(${config.getText()})`);
 
