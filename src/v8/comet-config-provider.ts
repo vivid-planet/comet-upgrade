@@ -112,7 +112,6 @@ export default async function cometConfigProvider() {
         await sourceFile.save();
     }
 
-    // Rename sitesConfig -> siteConfigs
     for (const filePath of ["admin/src/config.ts", "admin/src/config.tsx"]) {
         const sourceFile = project.getSourceFile(filePath);
 
@@ -120,9 +119,46 @@ export default async function cometConfigProvider() {
             continue;
         }
 
+        // Rename sitesConfig -> siteConfigs
         sourceFile
             .getFirstDescendant((node) => node.getKind() === SyntaxKind.Identifier && node.getText() === "sitesConfig")
             ?.replaceWithText("siteConfigs");
+
+        // Remove Config type
+        sourceFile
+            .getFirstDescendant(
+                (node) =>
+                    node.getKind() === SyntaxKind.TypeAliasDeclaration &&
+                    node.getFirstDescendantByKind(SyntaxKind.Identifier)?.getText() === "Config",
+            )
+            ?.replaceWithText("");
+
+        // Remove ConfigContext
+        sourceFile
+            .getFirstDescendant(
+                (node) =>
+                    node.getKind() === SyntaxKind.VariableStatement &&
+                    node.getFirstDescendantByKind(SyntaxKind.Identifier)?.getText() === "ConfigContext",
+            )
+            ?.replaceWithText("");
+
+        // Remove ConfigProvider
+        sourceFile
+            .getFirstDescendant(
+                (node) =>
+                    node.getKind() === SyntaxKind.FunctionDeclaration &&
+                    node.getFirstDescendantByKind(SyntaxKind.Identifier)?.getText() === "ConfigProvider",
+            )
+            ?.replaceWithText("");
+
+        // Remove useConfig
+        sourceFile
+            .getFirstDescendant(
+                (node) =>
+                    node.getKind() === SyntaxKind.FunctionDeclaration &&
+                    node.getDescendantsOfKind(SyntaxKind.Identifier).some((identifier) => identifier.getText() === "useConfig"),
+            )
+            ?.replaceWithText("");
 
         await sourceFile.save();
     }
