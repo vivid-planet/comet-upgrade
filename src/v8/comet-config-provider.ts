@@ -109,6 +109,30 @@ export default async function cometConfigProvider() {
             });
         }
 
+        // useConfig -> useCometConfig
+        const configImport = sourceFile.getImportDeclaration((importDeclaration) => importDeclaration.getModuleSpecifierValue() === "@src/config");
+
+        if (configImport) {
+            configImport
+                .getNamedImports()
+                .find((namedImport) => namedImport.getName() === "useConfig")
+                ?.remove();
+
+            if (configImport.getNamedImports().length === 0) {
+                configImport.remove();
+            }
+
+            cmsAdminImport.addNamedImport("useCometConfig");
+
+            sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression).forEach((callExpression) => {
+                const identifier = callExpression.getFirstDescendantByKind(SyntaxKind.Identifier);
+
+                if (identifier && identifier.getText() === "useConfig") {
+                    identifier.replaceWithText("useCometConfig");
+                }
+            });
+        }
+
         await sourceFile.save();
     }
 
