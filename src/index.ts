@@ -124,6 +124,8 @@ function getCurrentVersion() {
 }
 
 async function updateDependencies(targetVersion: SemVer, isMajorUpdate = false) {
+    await executeCommand("npm", ["install", "--no-audit", "--loglevel", "error", "--save-exact", `@comet/cli@${targetVersion.version}`]);
+
     const packages: Record<(typeof microservices)[number], string[]> = {
         api: ["@comet/blocks-api", "@comet/cms-api"],
         admin: [
