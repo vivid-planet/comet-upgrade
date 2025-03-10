@@ -136,9 +136,8 @@ export default async function cometConfigProvider() {
 
     rootJsxElement.replaceWithText(
         `<CometConfigProvider
-            apiUrl={config.apiUrl}
+            {...config}
             graphQLApiUrl={\`\${config.apiUrl}/graphql\`}
-            adminUrl={config.adminUrl}
         >
             ${rootJsxElement.getFullText()}
         </CometConfigProvider>
