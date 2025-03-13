@@ -33,6 +33,10 @@ export default async function replaceGridColDefImport() {
             .find((namedImport) => namedImport.getText() === "GridColDef")
             ?.remove();
 
+        if (dataGridImport.getNamedImports().length === 0) {
+            dataGridImport.remove();
+        }
+
         sourceFile.addImportDeclaration({
             namedImports: ["GridColDef"],
             moduleSpecifier: "@comet/admin",
