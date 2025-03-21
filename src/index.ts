@@ -152,9 +152,13 @@ async function updateDependencies(targetVersion: SemVer, isMajorUpdate = false) 
 
         const dependencies = packages[microservice].filter((packageName) => packageJson.dependencies?.[packageName] !== undefined);
 
-        const devDependencies = ["@comet/cli", "@comet/eslint-config", "@comet/eslint-plugin"].filter(
-            (packageName) => packageJson.devDependencies?.[packageName] !== undefined,
-        );
+        const devDependencies = [
+            "@comet/cli",
+            "@comet/eslint-config",
+            "@comet/eslint-plugin",
+            "@comet/admin-generator",
+            "@comet/api-generator",
+        ].filter((packageName) => packageJson.devDependencies?.[packageName] !== undefined);
 
         if (dependencies.length === 0 && devDependencies.length === 0) {
             console.warn(`Microservice '${microservice}' has no Comet DXP dependencies. Skipping install`);
