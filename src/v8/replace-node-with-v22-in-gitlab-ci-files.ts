@@ -15,8 +15,10 @@ export default async function replaceNodeWithV22InNvmrc() {
         content = content
             .replace(/node18/g, "node22")
             .replace(/node20/g, "node22")
-            .replace(/nodejs18/g, "nodejs22")
-            .replace(/nodejs20/g, "nodejs22");
+            .replace(/nodejs18-minimal/g, "nodejs22-minimal")
+            .replace(/nodejs20-minimal/g, "nodejs22-minimal")
+            .replace(/nodejs18/g, "nodejs22-minimal")
+            .replace(/nodejs20/g, "nodejs22-minimal");
 
         await fs.writeFile(file, content, "utf8");
     }
