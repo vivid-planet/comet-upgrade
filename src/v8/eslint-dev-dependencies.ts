@@ -1,4 +1,5 @@
-import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, rmSync } from "fs";
+import { Project, SourceFile, SyntaxKind } from "ts-morph";
 
 import { PackageJson } from "../util/package-json.util";
 
@@ -104,10 +105,51 @@ const createNewFlatConfigurationFile = ({ workingDirectory, fileContent }: { wor
  //
  ${commentedEslintConfig}
  `;
-    writeFileSync(`${workingDirectory}eslint.config.mjs`, oldEslintConfigTodo + fileContent);
+
+    const project = new Project({ tsConfigFilePath: `./${workingDirectory}tsconfig.json` });
+    const filePath = `${workingDirectory}eslint.config.mjs`;
+    const sourceFile = project.createSourceFile(filePath, oldEslintConfigTodo + fileContent, { overwrite: true });
+
+    transferEslintIgnore({ workingDirectory, sourceFile });
+
+    sourceFile.saveSync();
 };
 
 const deleteOldEslintRc = ({ workingDirectory }: { workingDirectory: string }) => {
     console.log(`🚀 Delete old .eslintrc.json configuration file ${workingDirectory}`);
     rmSync(`${workingDirectory}.eslintrc.json`);
+};
+
+const transferEslintIgnore = ({ workingDirectory, sourceFile }: { workingDirectory: string; sourceFile: SourceFile }) => {
+    console.log(`🚀 Transfer ignores from .eslintignore to eslint.config.mjs ${workingDirectory}`);
+    if (!existsSync(`${workingDirectory}.eslintignore`)) {
+        return;
+    }
+
+    const eslintIgnore = readFileSync(`${workingDirectory}.eslintignore`, "utf-8")
+        .split("\n")
+        .filter((ignore) => ignore.length > 0);
+
+    const arrayLiteral = sourceFile.getVariableStatementOrThrow("config").getDescendantsOfKind(SyntaxKind.ArrayLiteralExpression)[0];
+
+    const firstObject = arrayLiteral.getElements()[0];
+
+    if (firstObject.isKind(SyntaxKind.ObjectLiteralExpression)) {
+        const ignoresProp = firstObject.getProperty("ignores");
+
+        if (ignoresProp?.isKind(SyntaxKind.PropertyAssignment)) {
+            const ignoresArray = ignoresProp.getInitializerIfKind(SyntaxKind.ArrayLiteralExpression);
+
+            if (ignoresArray) {
+                eslintIgnore.forEach((ignore) => {
+                    if (!ignoresArray?.getElements().some((element) => element.getText() === `"${ignore}"`)) {
+                        ignoresArray?.addElement(`"${ignore}"`);
+                    }
+                });
+            }
+        }
+    }
+
+    console.log(`🚀 Delete old .eslintignore file ${workingDirectory}`);
+    rmSync(`${workingDirectory}.eslintignore`);
 };
