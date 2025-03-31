@@ -305,8 +305,6 @@ export default async function cometConfigProvider() {
             cometConfigProviderOpeningElement.addAttribute({ name: "dam", initializer: `{${damConfig.getText()}}` });
         }
 
-        cometConfigProviderOpeningElement.addAttribute({ name: "imgproxy", initializer: "{config.imgproxy}" });
-
         damConfigProviderElement.replaceWithText(
             damConfigProviderElement
                 .getJsxChildren()
