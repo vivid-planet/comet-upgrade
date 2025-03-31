@@ -1,6 +1,8 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import prettier from "prettier";
 
+export const stage = "before-install";
+
 /**
  * Move the maxSrcResolution property from imgproxy to dam in comet-config.json
  */
