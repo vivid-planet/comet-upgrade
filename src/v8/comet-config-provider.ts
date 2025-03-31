@@ -1,5 +1,5 @@
 import { glob } from "glob";
-import { JsxElement, Project, StructureKind, SyntaxKind } from "ts-morph";
+import { JsxElement, Project, SyntaxKind } from "ts-morph";
 
 export default async function cometConfigProvider() {
     const project = new Project({ tsConfigFilePath: "./admin/tsconfig.json" });
@@ -302,16 +302,10 @@ export default async function cometConfigProvider() {
 
         if (damConfig) {
             damConfig.insertSpreadAssignment(0, { expression: "config.dam" });
-            damConfig.addProperty({
-                name: "maxSrcResolution",
-                kind: StructureKind.PropertyAssignment,
-                initializer: "config.imgproxy.maxSrcResolution",
-            });
-            cometConfigProviderOpeningElement.addAttribute({
-                name: "dam",
-                initializer: `{${damConfig.getText()}}`,
-            });
+            cometConfigProviderOpeningElement.addAttribute({ name: "dam", initializer: `{${damConfig.getText()}}` });
         }
+
+        cometConfigProviderOpeningElement.addAttribute({ name: "imgproxy", initializer: "{config.imgproxy}" });
 
         damConfigProviderElement.replaceWithText(
             damConfigProviderElement
