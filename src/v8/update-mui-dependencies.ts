@@ -13,11 +13,11 @@ export default async function updateMuiDependencies() {
 
     const packageJson = new PackageJson(adminPackageJsonPath);
 
-    packageJson.addDependency("@mui/material", "^6.0.0");
-    packageJson.addDependency("@mui/system", "^6.0.0");
-    packageJson.addDependency("@mui/utils", "^6.0.0");
-    packageJson.addDependency("@mui/icons-material", "^6.0.0");
-    packageJson.addDependency("@mui/lab", "^6.0.0-beta.10");
+    packageJson.updateDependency("@mui/material", "^7.0.0");
+    packageJson.updateDependency("@mui/system", "^7.0.0");
+    packageJson.updateDependency("@mui/utils", "^7.0.0");
+    packageJson.updateDependency("@mui/icons-material", "^7.0.0");
+    packageJson.updateDependency("@mui/lab", "^7.0.0-beta.9");
 
     packageJson.save();
 }
