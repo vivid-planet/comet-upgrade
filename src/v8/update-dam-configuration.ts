@@ -33,7 +33,7 @@ export default async function updateDamConfiguration() {
         }
     }
 
-    // Add ImgproxyModule imprort
+    // Add ImgproxyModule import
     sourceFile.addImportDeclaration({
         namedImports: ["ImgproxyModule"],
         moduleSpecifier: "@comet/cms-api",
