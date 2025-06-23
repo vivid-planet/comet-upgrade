@@ -1,21 +1,27 @@
-import { JsxElement, JsxOpeningElement, JsxSelfClosingElement, Node, Project, SyntaxKind } from "ts-morph";
+import { JsxElement, JsxOpeningElement, JsxSelfClosingElement, Node, Project, SourceFile, SyntaxKind } from "ts-morph";
 
 /**
- * Wraps <LatestContentUpdates /> in <Grid size={{ xs: 12, lg: 6 }}> if not already wrapped, because internal
- * Grid wrapper of DashboardWidgetRoot got removed and must be applied in the parent.
+ * Wraps <LatestContentUpdates /> and <DashboardWidgetRoot /> in <Grid size={{ xs: 12, lg: 6 }}> if not already wrapped,
+ * because internal Grid wrapper of DashboardWidgetRoot got removed and must be applied in the parent.
  *
  * changes from:
  *
  *     <LatestContentUpdates />
+ *     or
+ *     <DashboardWidgetRoot />
  *
  * to:
  *
  *     <Grid size={{ xs: 12, lg: 6 }}>
  *         <LatestContentUpdates />
  *      </Grid>
+ *      or
+ *      <Grid size={{ xs: 12, lg: 6 }}>
+ *         <DashboardWidgetRoot />
+ *      </Grid>
  */
 export default async function wrapLatestContentUpdatesWithGrid() {
-    console.log("🔧 Wrap <LatestContentUpdates /> in <Grid size={...}> if needed");
+    console.log("🔧 Wrap <LatestContentUpdates /> or <DashboardWidgetRoot /> in <Grid size={...}> if needed");
 
     const project = new Project({ tsConfigFilePath: "./admin/tsconfig.json" });
     const sourceFiles = project.getSourceFiles("admin/src/**/*.tsx");
@@ -23,16 +29,10 @@ export default async function wrapLatestContentUpdatesWithGrid() {
     for (const sourceFile of sourceFiles) {
         let didChange = false;
 
-        const latestElements: (JsxElement | JsxSelfClosingElement)[] = [
-            ...sourceFile
-                .getDescendantsOfKind(SyntaxKind.JsxSelfClosingElement)
-                .filter((el) => el.getTagNameNode().getText() === "LatestContentUpdates"),
-            ...sourceFile
-                .getDescendantsOfKind(SyntaxKind.JsxElement)
-                .filter((el) => el.getOpeningElement().getTagNameNode().getText() === "LatestContentUpdates"),
-        ];
+        // Find both component types
+        const targetElements = findComponentsToWrap(sourceFile, ["LatestContentUpdates", "DashboardWidgetRoot"]);
 
-        for (const originalElement of latestElements) {
+        for (const originalElement of targetElements) {
             const parentGrid = getNearestParentGrid(originalElement);
 
             const shouldWrap =
@@ -77,6 +77,27 @@ export default async function wrapLatestContentUpdatesWithGrid() {
             console.log(`✅ Updated: ${sourceFile.getFilePath()}`);
         }
     }
+}
+
+/**
+ * Find all instances of the specified component names that need to be wrapped in grids
+ */
+function findComponentsToWrap(sourceFile: SourceFile, componentNames: string[]): (JsxElement | JsxSelfClosingElement)[] {
+    const elements: (JsxElement | JsxSelfClosingElement)[] = [];
+
+    // Find self-closing elements like <Component />
+    elements.push(
+        ...sourceFile.getDescendantsOfKind(SyntaxKind.JsxSelfClosingElement).filter((el) => componentNames.includes(el.getTagNameNode().getText())),
+    );
+
+    // Find regular elements like <Component>...</Component>
+    elements.push(
+        ...sourceFile
+            .getDescendantsOfKind(SyntaxKind.JsxElement)
+            .filter((el) => componentNames.includes(el.getOpeningElement().getTagNameNode().getText())),
+    );
+
+    return elements;
 }
 
 function getNearestParentGrid(node: Node): JsxOpeningElement | undefined {
