@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { Project } from "ts-morph";
+import { Project, SyntaxKind } from "ts-morph";
 
 import { PackageJson } from "../util/package-json.util";
 
@@ -16,7 +16,6 @@ export default async function UseMuiDatePickerInGrid() {
         return;
     }
 
-    // Add dependencies
     const packageJson = new PackageJson("admin/package.json");
     packageJson.addDependency("@mui/x-date-pickers", "^7.29.4");
     packageJson.addDependency("date-fns", "^4.1.0");
@@ -31,6 +30,17 @@ export default async function UseMuiDatePickerInGrid() {
         return;
     }
 
+    // Check if LocalizationProvider is already in use
+    const hasLocalizationProvider = appFile.getDescendantsOfKind(SyntaxKind.JsxElement).some((element) => {
+        const openingTag = element.getOpeningElement().getTagNameNode().getText();
+        return openingTag === "LocalizationProvider";
+    });
+
+    if (hasLocalizationProvider) {
+        console.log("☑️ LocalizationProvider is already set up in App.tsx - skipping further steps in this codemod.");
+        return;
+    }
+
     // Add imports if they don't exist
     if (!appFile.getImportDeclaration((imp) => imp.getModuleSpecifierValue() === "@mui/x-date-pickers")) {
         console.log("✅ Adding LocalizationProvider import to App.tsx");
@@ -38,8 +48,6 @@ export default async function UseMuiDatePickerInGrid() {
             moduleSpecifier: "@mui/x-date-pickers",
             namedImports: [{ name: "LocalizationProvider" }],
         });
-    } else {
-        console.log("☑️ LocalizationProvider import already exists in App.tsx");
     }
 
     if (!appFile.getImportDeclaration((imp) => imp.getModuleSpecifierValue() === "@mui/x-date-pickers/AdapterDateFns")) {
@@ -48,8 +56,37 @@ export default async function UseMuiDatePickerInGrid() {
             moduleSpecifier: "@mui/x-date-pickers/AdapterDateFns",
             namedImports: [{ name: "AdapterDateFns" }],
         });
+    }
+
+    // Add date-fns locale import
+    if (!appFile.getImportDeclaration((imp) => imp.getModuleSpecifierValue() === "date-fns/locale")) {
+        console.log("✅ Adding date-fns locale import to App.tsx");
+        appFile.addImportDeclaration({
+            moduleSpecifier: "date-fns/locale",
+            namedImports: [{ name: "enUS" }],
+        });
+    }
+
+    // Find MuiThemeProvider and wrap its content with LocalizationProvider
+    const muiThemeProvider = appFile.getDescendantsOfKind(SyntaxKind.JsxElement).find((element) => {
+        const openingTag = element.getOpeningElement().getTagNameNode().getText();
+        return openingTag === "MuiThemeProvider" || openingTag === "ThemeProvider";
+    });
+
+    if (muiThemeProvider) {
+        console.log("✅ Adding LocalizationProvider wrapper above MuiThemeProvider");
+        muiThemeProvider.replaceWithText(`<LocalizationProvider 
+                dateAdapter={AdapterDateFns}
+                /* 
+                 * TODO: If the application uses internationalization or another language than enUS,
+                 * the locale must be adapted to the correct one from date-fns/locale
+                 */
+                adapterLocale={enUS}
+            >
+                ${muiThemeProvider.getText()}
+            </LocalizationProvider>`);
     } else {
-        console.log("☑️ AdapterDateFns import already exists in App.tsx");
+        console.error("🛑 Could not find MuiThemeProvider in App.tsx");
     }
 
     await appFile.save();
