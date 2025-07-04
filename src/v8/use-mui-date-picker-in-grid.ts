@@ -6,10 +6,14 @@ import { PackageJson } from "../util/package-json.util";
 export const stage = "before-install";
 
 /**
- * Prepares the admin to use the MUI DatePicker in a grid.
- *
- * This codmod adds the necessary dependencies for using the MUI DatePicker in a grid
- * and sets up the LocalizationProvider in App.tsx.
+ * Prepares the admin to use the MUI DatePicker in a grid by:
+ * 1. Installing dependencies:
+ *    - @mui/x-date-pickers
+ *    - date-fns
+ * 2. Setting up LocalizationProvider:
+ *    - Adds required imports
+ *    - Wraps app with LocalizationProvider (above MuiThemeProvider)
+ *    - Configures enUS locale with internationalization note
  */
 export default async function UseMuiDatePickerInGrid() {
     if (!existsSync("admin/package.json")) {
