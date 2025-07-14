@@ -57,7 +57,7 @@ export default async function UseMuiDatePickerInGrid() {
     if (!appFile.getImportDeclaration((imp) => imp.getModuleSpecifierValue() === "@mui/x-date-pickers/AdapterDateFns")) {
         console.log("✅ Adding AdapterDateFns import to App.tsx");
         appFile.addImportDeclaration({
-            moduleSpecifier: "@mui/x-date-pickers/AdapterDateFns",
+            moduleSpecifier: "@mui/x-date-pickers/AdapterDateFnsV3",
             namedImports: [{ name: "AdapterDateFns" }],
         });
     }
