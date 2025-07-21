@@ -25,9 +25,10 @@ export default async function removeReactBarrelImportsAdmin() {
             if (node.getKindName() === "PropertyAccessExpression") {
                 const text = node.getText();
                 if (text.startsWith("React.")) {
-                    const member = text.replace("React.", "");
-                    namedUsages.add(member);
-                    node.replaceWithText(member);
+                    // Only add the first property after React. as named import
+                    const member = text.split(".")[1];
+                    if (member) namedUsages.add(member);
+                    node.replaceWithText(text.replace("React.", ""));
                 }
             }
         });
