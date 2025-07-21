@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import fs from "fs";
+import { globSync } from "glob";
 import * as util from "node:util";
 import path from "path";
 import semver, { SemVer } from "semver";
@@ -198,11 +199,13 @@ async function findUpgradeScripts(targetVersionFolder: string): Promise<UpgradeS
 
     const scriptsFolder = path.join(__dirname, targetVersionFolder);
 
-    for (const fileName of fs.readdirSync(scriptsFolder)) {
-        const module = await import(path.join(__dirname, targetVersionFolder, fileName));
+    const files = globSync("**/*.js", { cwd: scriptsFolder, nodir: true });
+
+    for (const relativePath of files) {
+        const module = await import(path.join(scriptsFolder, relativePath));
 
         scripts.push({
-            name: fileName,
+            name: relativePath,
             stage: module.stage ?? "after-install",
             // Need default.default because of ESM interoperability with CommonJS.
             // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
