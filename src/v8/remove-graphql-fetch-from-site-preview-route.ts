@@ -3,6 +3,7 @@ import { Project, SyntaxKind } from "ts-morph";
 
 /**
  * Remove the second argument from sitePreviewRoute(request, createGraphQLFetch());
+ * Remove the third argument from legacyPagesRouterSitePreviewApiHandler(req, res, createGraphQLClient());
  */
 export default async function removeGraphQLFetchFromSitePreviewRoute() {
     const project = new Project({ tsConfigFilePath: "./site/tsconfig.json" });
@@ -26,22 +27,46 @@ export default async function removeGraphQLFetchFromSitePreviewRoute() {
             ),
         );
 
-        if (!importsSitePreviewRoute) {
-            continue;
-        }
+        if (importsSitePreviewRoute) {
+            sourceFile.forEachDescendant((node) => {
+                if (node.isKind(SyntaxKind.CallExpression)) {
+                    const callExpr = node;
+                    const expression = callExpr.getExpression();
 
-        sourceFile.forEachDescendant((node) => {
-            if (node.isKind(SyntaxKind.CallExpression)) {
-                const callExpr = node;
-                const expression = callExpr.getExpression();
-
-                if (expression.getText() === "sitePreviewRoute") {
-                    if (callExpr.getArguments().length > 1) {
-                        callExpr.removeArgument(1);
+                    if (expression.getText() === "sitePreviewRoute") {
+                        if (callExpr.getArguments().length > 1) {
+                            callExpr.removeArgument(1);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+
+        const legacyPagesRouterSitePreviewApiHandler = Boolean(
+            sourceFile.getImportDeclaration(
+                (declaration) =>
+                    declaration.getModuleSpecifierValue().includes("@comet/cms-site") &&
+                    declaration
+                        .getNamedImports()
+                        .map((imp) => imp.getText())
+                        .includes("legacyPagesRouterSitePreviewApiHandler"),
+            ),
+        );
+
+        if (legacyPagesRouterSitePreviewApiHandler) {
+            sourceFile.forEachDescendant((node) => {
+                if (node.isKind(SyntaxKind.CallExpression)) {
+                    const callExpr = node;
+                    const expression = callExpr.getExpression();
+
+                    if (expression.getText() === "legacyPagesRouterSitePreviewApiHandler") {
+                        if (callExpr.getArguments().length > 2) {
+                            callExpr.removeArgument(2);
+                        }
+                    }
+                }
+            });
+        }
 
         sourceFile.saveSync();
     }
