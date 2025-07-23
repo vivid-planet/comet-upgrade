@@ -15,15 +15,15 @@ export default async function updateNestDependencies() {
     packageJson.removeDependency("apollo-server-core");
     packageJson.removeDependency("apollo-server-express");
 
-    packageJson.updateDependency("@nestjs/apollo", "^13.0.3");
-    packageJson.updateDependency("@nestjs/common", "^11.0.10");
-    packageJson.updateDependency("@nestjs/core", "^11.0.10");
-    packageJson.updateDependency("@nestjs/graphql", "^13.0.3");
+    packageJson.updateDependency("@nestjs/apollo", "^13.1.0");
+    packageJson.updateDependency("@nestjs/common", "^11.1.3");
+    packageJson.updateDependency("@nestjs/core", "^11.1.3");
+    packageJson.updateDependency("@nestjs/graphql", "^13.1.0");
     packageJson.updateDependency("@nestjs/mapped-types", "^2.1.0");
-    packageJson.updateDependency("@nestjs/platform-express", "^11.0.10");
-    packageJson.updateDependency("@nestjs/cli", "^11.0.3");
-    packageJson.updateDependency("@nestjs/schematics", "^11.0.1");
-    packageJson.updateDependency("@nestjs/testing", "^11.0.0");
+    packageJson.updateDependency("@nestjs/platform-express", "^11.1.3");
+    packageJson.updateDependency("@nestjs/cli", "^11.0.7");
+    packageJson.updateDependency("@nestjs/schematics", "^11.0.5");
+    packageJson.updateDependency("@nestjs/testing", "^11.1.3");
 
     packageJson.updateDependency("graphql", "^16.10.0");
 
