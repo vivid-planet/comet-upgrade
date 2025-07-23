@@ -51,7 +51,7 @@ export default async function updateDamConfiguration() {
             return expression.getText() === "ImgproxyModule.register";
         });
         if (!imgproxyModuleCall) {
-            importsArray.addElement("ImgproxyModule.register({ imgproxyConfig: config.imgproxy })");
+            importsArray.addElement("ImgproxyModule.register(config.imgproxy)");
         }
     }
 
