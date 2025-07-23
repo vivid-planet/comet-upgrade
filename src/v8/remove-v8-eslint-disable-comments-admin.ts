@@ -2,7 +2,7 @@ import { Project } from "ts-morph";
 
 export const stage = "never";
 
-export default async function ignoreRestrictedImportsAdmin() {
+export default async function removeV8EslintDisableCommentsAdmin() {
     const project = new Project({ tsConfigFilePath: "./admin/tsconfig.json" });
     const sourceFiles = project.getSourceFiles("admin/src/**/*.tsx");
 
