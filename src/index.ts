@@ -13,8 +13,7 @@ function microserviceExists(microservice: "api" | "admin" | "site") {
     return fs.existsSync(`${microservice}/package.json`);
 }
 
-const isRunningViaNpx = Boolean(process.env.npm_execpath?.includes("npx"));
-const isLocalDevelopment = !isRunningViaNpx;
+const isLocalDevelopment = process.argv[0].endsWith("node");
 
 async function main() {
     let targetVersionArg = process.argv[2];
@@ -25,7 +24,7 @@ async function main() {
     }
 
     if (isLocalDevelopment) {
-        console.warn("Not running via npx -> assuming local development. Scripts will run twice to ensure idempotency.");
+        console.warn("Executed via node -> assuming local development. Scripts will run twice to ensure idempotency.");
     }
 
     const isUpgradeScript = targetVersionArg.endsWith(".ts");
@@ -190,7 +189,7 @@ async function updateDependencies(targetVersion: SemVer, isMajorUpdate = false) 
 
 type UpgradeScript = {
     name: string;
-    stage: "before-install" | "after-install";
+    stage: "before-install" | "after-install" | "never";
     script: () => Promise<void>;
 };
 
