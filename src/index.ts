@@ -189,7 +189,7 @@ async function updateDependencies(targetVersion: SemVer, isMajorUpdate = false) 
 
 type UpgradeScript = {
     name: string;
-    stage: "before-install" | "after-install";
+    stage: "before-install" | "after-install" | "never";
     script: () => Promise<void>;
 };
 
