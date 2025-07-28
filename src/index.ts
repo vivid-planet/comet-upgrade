@@ -17,7 +17,7 @@ function microserviceExists(microservice: "api" | "admin" | "site") {
 const isLocalDevelopment = process.argv[0].endsWith("node");
 
 async function main() {
-    let targetVersionArg = process.argv[2];
+    const targetVersionArg = process.argv[2];
 
     if (targetVersionArg === undefined) {
         console.error("Missing target version! Usage: npx @comet/upgrade <version>");
@@ -29,6 +29,7 @@ async function main() {
     }
 
     const isUpgradeScript = targetVersionArg.endsWith(".ts");
+    const isSubfolder = targetVersionArg.includes("/");
 
     if (isUpgradeScript) {
         if (fs.existsSync(path.join(__dirname, targetVersionArg.replace(/\.ts$/, ".js")))) {
@@ -46,8 +47,23 @@ async function main() {
             process.exit(-1);
         }
         return;
+    } else if (isSubfolder) {
+        await executeSubfolder(targetVersionArg);
+    } else {
+        await executeAll(targetVersionArg);
     }
+}
 
+async function executeSubfolder(targetVersionArg: string) {
+    const upgradeScripts = await findUpgradeScripts(targetVersionArg);
+    console.info("\n⚙️ Executing scripts\n");
+    await runUpgradeScripts(upgradeScripts);
+    console.info("\n✅️ Scripts finished\n");
+
+    await runEslintFix();
+}
+
+async function executeAll(targetVersionArg: string) {
     if (!targetVersionArg.includes(".")) {
         targetVersionArg = await getLatestPackageVersion("@comet/admin", semver.coerce(targetVersionArg)?.major);
     }
@@ -190,9 +206,11 @@ async function updateDependencies(targetVersion: SemVer, isMajorUpdate = false) 
 
 type UpgradeScript = {
     name: string;
-    stage: "before-install" | "after-install" | "never";
+    stage: Stage;
     script: () => Promise<void>;
 };
+
+type Stage = "before-install" | "after-install" | "never";
 
 async function findUpgradeScripts(targetVersionFolder: string): Promise<UpgradeScript[]> {
     const scripts: UpgradeScript[] = [];
@@ -203,10 +221,12 @@ async function findUpgradeScripts(targetVersionFolder: string): Promise<UpgradeS
 
     for (const relativePath of files) {
         const module = await import(path.join(scriptsFolder, relativePath));
+        const folders = relativePath.split("/");
+        const stage: Stage | undefined = folders.length >= 3 ? folders[1] : module.stage;
 
         scripts.push({
             name: relativePath,
-            stage: module.stage ?? "after-install",
+            stage: stage ?? "after-install",
             // Need default.default because of ESM interoperability with CommonJS.
             // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
             script: module.default.default,
