@@ -1,6 +1,6 @@
 import { Project } from "ts-morph";
 
-export const stage = "never";
+export const stage = "before-install";
 
 export default async function removeV8EslintDisableCommentsAdmin() {
     const project = new Project({ tsConfigFilePath: "./admin/tsconfig.json" });
