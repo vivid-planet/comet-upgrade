@@ -257,7 +257,7 @@ async function runUpgradeScript(script: UpgradeScript) {
 }
 
 async function runEslintFix() {
-    console.info("Fixing ESLint errors");
+    console.info("Trying to fix ESLint errors");
 
     for (const microservice of microservices) {
         if (!microserviceExists(microservice)) {
@@ -265,10 +265,11 @@ async function runEslintFix() {
         }
 
         try {
-            await executeCommand("npm", ["run", "--prefix", microservice, "--no-audit", "--loglevel", "error", "lint:eslint", "--", "--fix"]);
+            await executeCommand("npm", ["run", "--prefix", microservice, "--no-audit", "--loglevel", "error", "lint:eslint", "--", "--fix"], {
+                silent: true,
+            });
         } catch (err) {
-            console.error(`Failed to fix ESLint errors in ${microservice}. See original error below`);
-            console.error(err);
+            console.error(`Failed to fix ESLint errors in ${microservice}. You must fix the linting errors yourself.`);
         }
     }
 }
