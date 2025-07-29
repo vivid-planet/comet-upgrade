@@ -15,6 +15,7 @@ function microserviceExists(microservice: "api" | "admin" | "site") {
 }
 
 const isLocalDevelopment = process.argv[0].endsWith("node");
+const skipLint = process.argv.includes("--skip-lint");
 
 async function main() {
     const targetVersionArg = process.argv[2];
@@ -37,11 +38,9 @@ async function main() {
             await runUpgradeScript({
                 name: targetVersionArg,
                 stage: "before-install",
-                // Need default.default because of ESM interoperability with CommonJS.
-                // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
                 script: module.default.default,
             });
-            await runEslintFix();
+            if (!skipLint) await runEslintFix();
         } else {
             console.error(`Can't find upgrade script '${targetVersionArg}'`);
             process.exit(-1);
@@ -59,8 +58,7 @@ async function executeSubfolder(targetVersionArg: string) {
     console.info("\n⚙️ Executing scripts\n");
     await runUpgradeScripts(upgradeScripts);
     console.info("\n✅️ Scripts finished\n");
-
-    await runEslintFix();
+    if (!skipLint) await runEslintFix();
 }
 
 async function executeAll(targetVersionArg: string) {
@@ -103,7 +101,7 @@ async function executeAll(targetVersionArg: string) {
     await runUpgradeScripts(afterInstallScripts);
     console.info("\n☑️ After install scripts finished\n");
 
-    await runEslintFix();
+    if (!skipLint) await runEslintFix();
 }
 
 interface PackageJson {
