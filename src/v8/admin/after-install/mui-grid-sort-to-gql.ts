@@ -13,8 +13,8 @@ import { Project, SyntaxKind } from "ts-morph";
  * assuming, with the drawback, that columns variable is already available in the current scope.
  */
 export default async function updateMuiXVersion() {
-    const project = new Project({ tsConfigFilePath: "./tsconfig.json" });
-    const files: string[] = glob.sync(["src/**/*.ts", "src/**/*.tsx"]);
+    const project = new Project({ tsConfigFilePath: "admin/tsconfig.json" });
+    const files: string[] = glob.sync(["admin/src/**/*.ts", "admin/src/**/*.tsx"]);
 
     for (const filePath of files) {
         const sourceFile = project.getSourceFile(filePath);
