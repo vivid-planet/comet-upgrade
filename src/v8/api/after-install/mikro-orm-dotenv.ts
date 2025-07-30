@@ -1,6 +1,6 @@
 import { existsSync } from "fs";
 
-import { PackageJson } from "../util/package-json.util";
+import { PackageJson } from "../../../util/package-json.util";
 
 /**
  * Adds a `mikro-orm` script to package.json that calls dotenv.

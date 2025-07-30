@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import fs from "fs";
+import { globSync } from "glob";
 import * as util from "node:util";
 import path from "path";
 import semver, { SemVer } from "semver";
@@ -16,7 +17,7 @@ function microserviceExists(microservice: "api" | "admin" | "site") {
 const isLocalDevelopment = process.argv[0].endsWith("node");
 
 async function main() {
-    let targetVersionArg = process.argv[2];
+    const targetVersionArg = process.argv[2];
 
     if (targetVersionArg === undefined) {
         console.error("Missing target version! Usage: npx @comet/upgrade <version>");
@@ -28,6 +29,7 @@ async function main() {
     }
 
     const isUpgradeScript = targetVersionArg.endsWith(".ts");
+    const isSubfolder = targetVersionArg.includes("/");
 
     if (isUpgradeScript) {
         if (fs.existsSync(path.join(__dirname, targetVersionArg.replace(/\.ts$/, ".js")))) {
@@ -45,8 +47,23 @@ async function main() {
             process.exit(-1);
         }
         return;
+    } else if (isSubfolder) {
+        await executeSubfolder(targetVersionArg);
+    } else {
+        await executeAll(targetVersionArg);
     }
+}
 
+async function executeSubfolder(targetVersionArg: string) {
+    const upgradeScripts = await findUpgradeScripts(targetVersionArg);
+    console.info("\n⚙️ Executing scripts\n");
+    await runUpgradeScripts(upgradeScripts);
+    console.info("\n✅️ Scripts finished\n");
+
+    await runEslintFix();
+}
+
+async function executeAll(targetVersionArg: string) {
     if (!targetVersionArg.includes(".")) {
         targetVersionArg = await getLatestPackageVersion("@comet/admin", semver.coerce(targetVersionArg)?.major);
     }
@@ -189,21 +206,27 @@ async function updateDependencies(targetVersion: SemVer, isMajorUpdate = false) 
 
 type UpgradeScript = {
     name: string;
-    stage: "before-install" | "after-install" | "never";
+    stage: Stage;
     script: () => Promise<void>;
 };
+
+type Stage = "before-install" | "after-install" | "never";
 
 async function findUpgradeScripts(targetVersionFolder: string): Promise<UpgradeScript[]> {
     const scripts: UpgradeScript[] = [];
 
     const scriptsFolder = path.join(__dirname, targetVersionFolder);
 
-    for (const fileName of fs.readdirSync(scriptsFolder)) {
-        const module = await import(path.join(__dirname, targetVersionFolder, fileName));
+    const files = globSync("**/*.js", { cwd: scriptsFolder, nodir: true });
+
+    for (const relativePath of files) {
+        const module = await import(path.join(scriptsFolder, relativePath));
+        const folders = relativePath.split("/");
+        const stage: Stage | undefined = folders.length >= 3 ? folders[1] : module.stage;
 
         scripts.push({
-            name: fileName,
-            stage: module.stage ?? "after-install",
+            name: relativePath,
+            stage: stage ?? "after-install",
             // Need default.default because of ESM interoperability with CommonJS.
             // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
             script: module.default.default,
@@ -234,7 +257,7 @@ async function runUpgradeScript(script: UpgradeScript) {
 }
 
 async function runEslintFix() {
-    console.info("Fixing ESLint errors");
+    console.info("Trying to fix ESLint errors");
 
     for (const microservice of microservices) {
         if (!microserviceExists(microservice)) {
@@ -242,10 +265,11 @@ async function runEslintFix() {
         }
 
         try {
-            await executeCommand("npm", ["run", "--prefix", microservice, "--no-audit", "--loglevel", "error", "lint:eslint", "--", "--fix"]);
+            await executeCommand("npm", ["run", "--prefix", microservice, "--no-audit", "--loglevel", "error", "lint:eslint", "--", "--fix"], {
+                silent: true,
+            });
         } catch (err) {
-            console.error(`Failed to fix ESLint errors in ${microservice}. See original error below`);
-            console.error(err);
+            console.error(`Failed to fix ESLint errors in ${microservice}. You must fix the linting errors yourself.`);
         }
     }
 }
