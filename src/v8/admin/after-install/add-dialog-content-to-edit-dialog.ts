@@ -50,6 +50,13 @@ export default async function addDialogContentToEditDialog() {
 
                     if (!returnedExpression) return;
 
+                    // Check if already wrapped in DialogContent
+                    const alreadyWrapped =
+                        Node.isJsxElement(returnedExpression) &&
+                        returnedExpression.getOpeningElement().getTagNameNode().getText() === "DialogContent";
+
+                    if (alreadyWrapped) return;
+
                     if (Node.isJsxFragment(returnedExpression)) {
                         const fragmentChildren = returnedExpression.getChildrenOfKind(SyntaxKind.JsxElement);
                         const fragmentText = fragmentChildren.map((child) => child.getText()).join("\n");
@@ -67,6 +74,9 @@ export default async function addDialogContentToEditDialog() {
                 const openEditDialog = jsxElement.getOpeningElement().getText();
                 const closeEditDialog = jsxElement.getClosingElement().getText();
                 const childrensContent = children.map((child) => child.getText()).join("\n");
+
+                // Check if already wrapped in DialogContent
+                if (/^<DialogContent[\s>]/.test(childrensContent.trim())) return;
 
                 const newContent = `${openEditDialog}\n<DialogContent>\n${childrensContent}\n</DialogContent>\n${closeEditDialog}`;
                 elementsToReplace.push({ node: jsxElement, newText: newContent });
