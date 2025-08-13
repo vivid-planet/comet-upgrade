@@ -14,7 +14,7 @@ function microserviceExists(microservice: "api" | "admin" | "site") {
     return fs.existsSync(`${microservice}/package.json`);
 }
 
-const isLocalDevelopment = process.argv[0].endsWith("node");
+const isLocalDevelopment = !process.argv[1].includes("_npx");
 const skipLint = process.argv.includes("--skip-lint");
 
 async function main() {
