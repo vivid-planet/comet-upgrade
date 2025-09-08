@@ -7,7 +7,6 @@ import { glob } from "glob";
  * - fieldName: -> formFieldName:
  */
 export default async function refactorCometGenFieldProperties() {
-    console.log("Try to run");
     const files: string[] = glob.sync("**/*cometGen.{ts,tsx}");
 
     for (const filePath of files) {
