@@ -7,6 +7,9 @@ export default async function replaceMuiButtonWithCometAdminButton() {
     for (const sourceFile of sourceFiles) {
         let changed = false;
         const importDeclarations = sourceFile.getImportDeclarations();
+
+        const cometAdminImport = importDeclarations.find((id) => id.getModuleSpecifierValue() === "@comet/admin");
+
         for (const importDecl of importDeclarations) {
             if (importDecl.getModuleSpecifierValue() === "@mui/material") {
                 const namedImports = importDecl.getNamedImports();
@@ -25,7 +28,6 @@ export default async function replaceMuiButtonWithCometAdminButton() {
         // Add Button import from @comet/admin if it was removed
         if (changed) {
             // Check if already imported from @comet/admin
-            const cometAdminImport = importDeclarations.find((id) => id.getModuleSpecifierValue() === "@comet/admin");
             if (cometAdminImport) {
                 // Add Button if not already present
                 if (!cometAdminImport.getNamedImports().some((ni) => ni.getName() === "Button")) {
