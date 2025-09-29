@@ -12,7 +12,7 @@ export default async function updateImportOfDialog() {
             throw new Error(`Can't get source file for ${filePath}`);
         }
 
-        const adminImport = sourceFile.getImportDeclaration((declaration) => declaration.getModuleSpecifierValue().includes("@comet/admin"));
+        const adminImport = sourceFile.getImportDeclaration((declaration) => declaration.getModuleSpecifierValue() === "@comet/admin");
         const adminImports = adminImport?.getNamedImports().map((namedImport) => namedImport.getText());
 
         if (adminImports) {
