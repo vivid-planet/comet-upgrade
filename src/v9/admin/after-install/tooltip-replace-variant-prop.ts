@@ -5,68 +5,68 @@ export default async function tooltipReplaceVariantProp() {
     const sourceFiles = project.getSourceFiles("admin/src/**/*.tsx");
 
     sourceFiles.forEach((sourceFile) => {
-        const cometAdminImports = sourceFile.getImportDeclarations().filter((importDeclaration) => {
+        const cometAdminImport = sourceFile.getImportDeclarations().find((importDeclaration) => {
             return importDeclaration.getModuleSpecifier().getLiteralValue() === "@comet/admin";
         });
 
-        if (cometAdminImports.length > 0) {
-            const tooltipComponentNames = new Set<string>();
+        if (!cometAdminImport) {
+            return;
+        }
 
-            cometAdminImports.forEach((importDeclaration) => {
-                importDeclaration.getNamedImports().forEach((namedImport) => {
-                    if (namedImport.getName() === "Tooltip") {
-                        const aliasName = namedImport.getAliasNode();
-                        tooltipComponentNames.add(aliasName ? aliasName.getText() : "Tooltip");
-                    }
-                });
-            });
+        const tooltipComponentNames = new Set<string>();
 
-            const jsxElements = sourceFile.getDescendantsOfKind(SyntaxKind.JsxOpeningElement);
+        cometAdminImport.getNamedImports().forEach((namedImport) => {
+            if (namedImport.getName() === "Tooltip") {
+                const aliasName = namedImport.getAliasNode();
+                tooltipComponentNames.add(aliasName ? aliasName.getText() : "Tooltip");
+            }
+        });
 
-            jsxElements.forEach((jsxElement) => {
-                const componentName = jsxElement.getTagNameNode().getText();
+        const jsxElements = sourceFile.getDescendantsOfKind(SyntaxKind.JsxOpeningElement);
 
-                if (tooltipComponentNames.has(componentName)) {
-                    const variantAttribute = jsxElement
-                        .getAttributes()
-                        .find(
-                            (attribute) =>
-                                attribute.getKind() === SyntaxKind.JsxAttribute &&
-                                attribute.asKind(SyntaxKind.JsxAttribute)?.getNameNode().getText() === "variant",
-                        );
+        jsxElements.forEach((jsxElement) => {
+            const componentName = jsxElement.getTagNameNode().getText();
 
-                    if (variantAttribute) {
-                        const jsxAttribute = variantAttribute.asKind(SyntaxKind.JsxAttribute);
+            if (tooltipComponentNames.has(componentName)) {
+                const variantAttribute = jsxElement
+                    .getAttributes()
+                    .find(
+                        (attribute) =>
+                            attribute.getKind() === SyntaxKind.JsxAttribute &&
+                            attribute.asKind(SyntaxKind.JsxAttribute)?.getNameNode().getText() === "variant",
+                    );
 
-                        if (jsxAttribute) {
-                            const initializer = jsxAttribute.getInitializer();
-                            let variantValue: string | null = null;
+                if (variantAttribute) {
+                    const jsxAttribute = variantAttribute.asKind(SyntaxKind.JsxAttribute);
 
-                            if (initializer) {
-                                if (initializer.getKind() === SyntaxKind.StringLiteral) {
-                                    variantValue = initializer.asKind(SyntaxKind.StringLiteral)?.getLiteralValue() || null;
-                                } else if (initializer.getKind() === SyntaxKind.JsxExpression) {
-                                    const expression = initializer.asKind(SyntaxKind.JsxExpression)?.getExpression();
-                                    if (expression && expression.getKind() === SyntaxKind.StringLiteral) {
-                                        variantValue = expression.asKind(SyntaxKind.StringLiteral)?.getLiteralValue() || null;
-                                    }
+                    if (jsxAttribute) {
+                        const initializer = jsxAttribute.getInitializer();
+                        let variantValue: string | null = null;
+
+                        if (initializer) {
+                            if (initializer.getKind() === SyntaxKind.StringLiteral) {
+                                variantValue = initializer.asKind(SyntaxKind.StringLiteral)?.getLiteralValue() || null;
+                            } else if (initializer.getKind() === SyntaxKind.JsxExpression) {
+                                const expression = initializer.asKind(SyntaxKind.JsxExpression)?.getExpression();
+                                if (expression && expression.getKind() === SyntaxKind.StringLiteral) {
+                                    variantValue = expression.asKind(SyntaxKind.StringLiteral)?.getLiteralValue() || null;
                                 }
                             }
+                        }
 
-                            if (variantValue) {
-                                const isValueThatNoLongerExists = variantValue === "primary" || variantValue === "neutral";
+                        if (variantValue) {
+                            const isValueThatNoLongerExists = variantValue === "primary" || variantValue === "neutral";
 
-                                if (isValueThatNoLongerExists) {
-                                    variantAttribute.remove();
-                                } else {
-                                    jsxAttribute.getNameNode().replaceWithText("color");
-                                }
+                            if (isValueThatNoLongerExists) {
+                                variantAttribute.remove();
+                            } else {
+                                jsxAttribute.getNameNode().replaceWithText("color");
                             }
                         }
                     }
                 }
-            });
-            sourceFile.save();
-        }
+            }
+        });
+        sourceFile.save();
     });
 }
