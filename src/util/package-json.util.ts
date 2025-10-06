@@ -53,7 +53,7 @@ export class PackageJson {
     }
 
     save() {
-        writeFileSync(this.path, JSON.stringify(this.json, null, 4));
+        writeFileSync(this.path, `${JSON.stringify(this.json, null, 4)}\n`);
     }
 
     addScript(name: string, script: string) {
