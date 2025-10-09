@@ -29,7 +29,7 @@
     },
     "dependencies": {
         "chalk": "^4.1.2",
-        "eslint": "^8.57.1",
+        "eslint": "^9.37.0",
         "glob": "^10.4.5",
         "prettier": "^2.8.8",
         "semver": "^7.7.2",
