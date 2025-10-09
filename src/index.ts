@@ -1,9 +1,10 @@
+import * as util from "node:util";
+
 import chalk from "chalk";
 import fs from "fs";
 import { globSync } from "glob";
-import * as util from "node:util";
 import path from "path";
-import semver, { SemVer } from "semver";
+import semver, { type SemVer } from "semver";
 
 import { executeCommand } from "./util/execute-command.util";
 import { getLatestPackageVersion } from "./util/get-latest-package-version";
@@ -266,7 +267,7 @@ async function runEslintFix() {
             await executeCommand("npm", ["run", "--prefix", microservice, "--no-audit", "--loglevel", "error", "lint:eslint", "--", "--fix"], {
                 silent: true,
             });
-        } catch (err) {
+        } catch {
             console.error(`Failed to fix ESLint errors in ${microservice}. You must fix the linting errors yourself.`);
         }
     }

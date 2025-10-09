@@ -15,31 +15,29 @@
     "main": "lib/index.js",
     "bin": "bin/index.js",
     "files": [
-        "bin/index.js",
         "lib/**/*.js"
     ],
     "scripts": {
         "build": "npm run clean && tsc",
         "clean": "rimraf lib/",
         "lint": "run-p lint:eslint lint:tsc",
-        "lint:eslint": "eslint --max-warnings 0 src/",
+        "lint:eslint": "eslint src/ **/*.json --max-warnings 0 --no-warn-ignored",
         "lint:tsc": "tsc --noEmit",
         "prepare": "husky install",
         "start": "npm run clean && tsc --watch"
     },
     "dependencies": {
         "chalk": "^4.1.2",
-        "eslint": "^8.57.1",
+        "eslint": "^9.37.0",
         "glob": "^10.4.5",
-        "prettier": "^2.8.8",
+        "prettier": "^3.6.2",
         "semver": "^7.7.2",
         "ts-morph": "^22.0.0"
     },
     "devDependencies": {
-        "@comet/eslint-config": "^3.2.7",
+        "@comet/eslint-config": "^8.3.0",
         "@tsconfig/node22": "^22.0.1",
         "@types/node": "^22.0.0",
-        "@types/prettier": "^2.7.3",
         "@types/semver": "^7.7.1",
         "husky": "^8.0.3",
         "lint-staged": "^13.3.0",

@@ -17,6 +17,6 @@ export default async function moveMaxSrcResolutionInCometConfig() {
         }
 
         const prettierConfig = await prettier.resolveConfig(process.cwd());
-        writeFileSync(cometConfigPath, prettier.format(JSON.stringify(config), { ...prettierConfig, parser: "json" }));
+        writeFileSync(cometConfigPath, await prettier.format(JSON.stringify(config), { ...prettierConfig, parser: "json" }));
     }
 }

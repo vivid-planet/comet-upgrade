@@ -1,4 +1,5 @@
 import { existsSync } from "node:fs";
+
 import { Project, SyntaxKind } from "ts-morph";
 
 import { PackageJson } from "../../../util/package-json.util";
