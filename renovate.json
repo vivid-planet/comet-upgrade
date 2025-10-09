@@ -5,6 +5,9 @@
     "labels": ["dependencies"],
     "lockFileMaintenance": { "enabled": true },
     "minimumReleaseAge": "3 days",
+    "nvm": {
+        "enabled": false
+    },
     "packageRules": [
         {
             "groupName": "ESLint",
@@ -21,6 +24,11 @@
         {
             "labels": ["major", "dependencies"],
             "matchUpdateTypes": ["major"]
+        },
+        {
+            "enabled": false,
+            "matchDepTypes": ["engines", "uses-with"],
+            "matchPackageNames": ["node"]
         }
     ],
     "rangeStrategy": "bump"
