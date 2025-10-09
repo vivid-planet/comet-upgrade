@@ -19,11 +19,6 @@
             "matchPackageNames": ["/typescript/"]
         },
         {
-            "groupName": "Node.js",
-            "matchPackageNames": ["node"],
-            "rangeStrategy": "widen"
-        },
-        {
             "labels": ["major", "dependencies"],
             "matchUpdateTypes": ["major"]
         }
