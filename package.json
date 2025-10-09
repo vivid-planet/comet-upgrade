@@ -1,6 +1,6 @@
 {
     "name": "@comet/upgrade",
-    "version": "1.102.0",
+    "version": "1.103.0",
     "description": "Upgrade scripts for Comet DXP",
     "homepage": "https://github.com/vivid-planet/comet-upgrade#readme",
     "bugs": {
