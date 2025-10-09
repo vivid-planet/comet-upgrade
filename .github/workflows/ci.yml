@@ -10,6 +10,8 @@ on:
         branches:
             - main
 
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
     CI:
         runs-on: ubuntu-latest
