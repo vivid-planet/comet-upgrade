@@ -32,7 +32,7 @@
         "eslint": "^8.57.1",
         "glob": "^10.3.10",
         "prettier": "^2.8.8",
-        "semver": "^7.6.2",
+        "semver": "^7.7.2",
         "ts-morph": "^22.0.0"
     },
     "devDependencies": {
@@ -40,7 +40,7 @@
         "@tsconfig/node22": "^22.0.1",
         "@types/node": "^22.0.0",
         "@types/prettier": "^2.7.3",
-        "@types/semver": "^7.5.8",
+        "@types/semver": "^7.7.1",
         "husky": "^8.0.3",
         "lint-staged": "^13.3.0",
         "npm-run-all2": "^5.0.2",
