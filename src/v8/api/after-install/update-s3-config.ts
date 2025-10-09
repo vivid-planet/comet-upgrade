@@ -1,4 +1,4 @@
-import { ObjectLiteralExpression, Project, SyntaxKind } from "ts-morph";
+import { type ObjectLiteralExpression, Project, SyntaxKind } from "ts-morph";
 
 export default async function updateS3Config() {
     console.log(`🚀 Update s3 config to new structure.`);
@@ -18,7 +18,7 @@ export default async function updateS3Config() {
         const blobProp = returnObj.getPropertyOrThrow("blob").getFirstDescendantByKindOrThrow(SyntaxKind.ObjectLiteralExpression);
         const storageProp = blobProp.getPropertyOrThrow("storage").getFirstDescendantByKindOrThrow(SyntaxKind.ObjectLiteralExpression);
         s3Prop = storageProp.getPropertyOrThrow("s3").getFirstDescendantByKindOrThrow(SyntaxKind.ObjectLiteralExpression);
-    } catch (error) {
+    } catch {
         console.log("☑️  No S3 configuration found in the specified file. Skipping update.");
         return;
     }

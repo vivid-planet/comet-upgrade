@@ -1,5 +1,6 @@
-import { writeFile } from "fs/promises";
 import { existsSync } from "node:fs";
+
+import { writeFile } from "fs/promises";
 
 import { PackageJson } from "../util/package-json.util";
 

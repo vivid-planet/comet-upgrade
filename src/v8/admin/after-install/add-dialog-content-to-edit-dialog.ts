@@ -1,4 +1,4 @@
-import { Node, Project, SyntaxKind, ts } from "ts-morph";
+import { Node, Project, SyntaxKind, type ts } from "ts-morph";
 
 export default async function addDialogContentToEditDialog() {
     const project = new Project({ tsConfigFilePath: "./admin/tsconfig.json" });

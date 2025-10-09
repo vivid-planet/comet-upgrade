@@ -1,8 +1,10 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": ["config:recommended", ":semanticCommitsDisabled"],
-    "minimumReleaseAge": "3 days",
     "internalChecksFilter": "strict",
+    "labels": ["dependencies"],
+    "lockFileMaintenance": { "enabled": true },
+    "minimumReleaseAge": "3 days",
     "packageRules": [
         {
             "groupName": "ESLint",
@@ -22,11 +24,9 @@
             "rangeStrategy": "widen"
         },
         {
-            "matchUpdateTypes": ["major"],
-            "labels": ["major", "dependencies"]
+            "labels": ["major", "dependencies"],
+            "matchUpdateTypes": ["major"]
         }
     ],
-    "lockFileMaintenance": { "enabled": true },
-    "rangeStrategy": "bump",
-    "labels": ["dependencies"]
+    "rangeStrategy": "bump"
 }

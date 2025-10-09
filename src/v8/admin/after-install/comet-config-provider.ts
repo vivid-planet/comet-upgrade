@@ -1,5 +1,5 @@
 import { glob } from "glob";
-import { JsxElement, Project, SyntaxKind } from "ts-morph";
+import { type JsxElement, Project, SyntaxKind } from "ts-morph";
 
 export default async function cometConfigProvider() {
     const project = new Project({ tsConfigFilePath: "./admin/tsconfig.json" });

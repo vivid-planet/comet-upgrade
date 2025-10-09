@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, rmSync } from "fs";
-import { Project, SourceFile, SyntaxKind } from "ts-morph";
+import { Project, type SourceFile, SyntaxKind } from "ts-morph";
 
 import { PackageJson } from "../util/package-json.util";
 

@@ -1,5 +1,6 @@
-import fs from "fs";
 import * as crypto from "node:crypto";
+
+import fs from "fs";
 import { Project, SyntaxKind } from "ts-morph";
 
 import { executeCommand } from "../util/execute-command.util";

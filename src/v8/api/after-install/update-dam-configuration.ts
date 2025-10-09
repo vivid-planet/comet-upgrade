@@ -1,4 +1,4 @@
-import { ObjectLiteralExpression, Project, PropertyAssignment, SyntaxKind } from "ts-morph";
+import { type ObjectLiteralExpression, Project, type PropertyAssignment, SyntaxKind } from "ts-morph";
 
 /**
  * Update the configuration of the DamModule and BlobStorageModule and add ImgproxyModule to app.module.ts

@@ -24,5 +24,5 @@ export default async function removeClearTypesScript() {
     }
 
     const prettierConfig = await prettier.resolveConfig(process.cwd());
-    fs.writeFileSync("site/package.json", prettier.format(JSON.stringify(sitePackageJson), { ...prettierConfig, parser: "json" }));
+    fs.writeFileSync("site/package.json", await prettier.format(JSON.stringify(sitePackageJson), { ...prettierConfig, parser: "json" }));
 }
