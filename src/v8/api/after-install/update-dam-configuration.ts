@@ -40,10 +40,13 @@ export default async function updateDamConfiguration() {
     });
 
     // Add ImgproxyModule configuration
-    const importsArray = sourceFile.getDescendantsOfKind(SyntaxKind.ArrayLiteralExpression).find((array) => {
-        const parent = array.getParent();
-        return parent && parent.getKind() === SyntaxKind.PropertyAssignment && (parent as PropertyAssignment).getName() === "imports";
-    });
+    const importsArray = sourceFile
+        .getClass("AppModule")
+        ?.getStaticMethod("forRoot")
+        ?.getFirstDescendantByKind(SyntaxKind.ReturnStatement)
+        ?.getFirstDescendantByKind(SyntaxKind.ObjectLiteralExpression)
+        ?.getProperty("imports")
+        ?.getFirstDescendantByKind(SyntaxKind.ArrayLiteralExpression);
 
     if (importsArray) {
         const imgproxyModuleCall = sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression).find((call) => {
