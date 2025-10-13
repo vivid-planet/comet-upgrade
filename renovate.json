@@ -27,8 +27,8 @@
         },
         {
             "enabled": false,
-            "matchDepTypes": ["engines", "uses-with"],
-            "matchPackageNames": ["node"]
+            "matchDepNames": ["node"],
+            "matchDepTypes": ["engines", "uses-with"]
         }
     ],
     "rangeStrategy": "bump"
