@@ -23,7 +23,6 @@
         "lint": "run-p lint:eslint lint:tsc",
         "lint:eslint": "eslint src/ **/*.json --max-warnings 0 --no-warn-ignored",
         "lint:tsc": "tsc --noEmit",
-        "prepare": "husky install",
         "start": "npm run clean && tsc --watch"
     },
     "dependencies": {
