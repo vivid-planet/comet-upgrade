@@ -1,4 +1,5 @@
-import { promises as fs } from "fs";
+import { promises as fs } from "node:fs";
+
 import * as glob from "glob";
 
 export const stage = "before-install";

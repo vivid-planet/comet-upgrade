@@ -1,7 +1,8 @@
-import { existsSync, readFileSync, rmSync } from "fs";
+import { existsSync, readFileSync, rmSync } from "node:fs";
+
 import { Project, type SourceFile, SyntaxKind } from "ts-morph";
 
-import { PackageJson } from "../util/package-json.util";
+import { PackageJson } from "../util/package-json.util.js";
 
 const adminEslintConfig = `import eslintConfigReact from "@comet/eslint-config/react.js";
 

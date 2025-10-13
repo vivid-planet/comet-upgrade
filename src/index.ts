@@ -1,13 +1,13 @@
+import fs from "node:fs";
+import path from "node:path";
 import * as util from "node:util";
 
 import chalk from "chalk";
-import fs from "fs";
 import { globSync } from "glob";
-import path from "path";
 import semver, { type SemVer } from "semver";
 
-import { executeCommand } from "./util/execute-command.util";
-import { getLatestPackageVersion } from "./util/get-latest-package-version";
+import { executeCommand } from "./util/execute-command.util.js";
+import { getLatestPackageVersion } from "./util/get-latest-package-version.js";
 
 const microservices = ["api", "admin", "site"] as const;
 
@@ -34,12 +34,12 @@ async function main() {
     const isSubfolder = targetVersionArg.includes("/");
 
     if (isUpgradeScript) {
-        if (fs.existsSync(path.join(__dirname, targetVersionArg.replace(/\.ts$/, ".js")))) {
-            const module = await import(path.join(__dirname, targetVersionArg.replace(/\.ts$/, ".js")));
+        if (fs.existsSync(path.join(import.meta.dirname, targetVersionArg.replace(/\.ts$/, ".js")))) {
+            const module = await import(path.join(import.meta.dirname, targetVersionArg.replace(/\.ts$/, ".js")));
             await runUpgradeScript({
                 name: targetVersionArg,
                 stage: "before-install",
-                script: module.default.default,
+                script: module.default,
             });
             if (!skipLint) await runEslintFix();
         } else {
@@ -75,7 +75,7 @@ async function executeAll(targetVersionArg: string) {
 
     const targetVersionFolder = `v${targetVersion.major}`;
 
-    const scriptsFolder = path.join(__dirname, targetVersionFolder);
+    const scriptsFolder = path.join(import.meta.dirname, targetVersionFolder);
 
     if (!fs.existsSync(scriptsFolder)) {
         console.error(`Can't find upgrade scripts for target version '${targetVersionFolder}'`);
@@ -214,7 +214,7 @@ type Stage = "before-install" | "after-install" | "never";
 async function findUpgradeScripts(targetVersionFolder: string): Promise<UpgradeScript[]> {
     const scripts: UpgradeScript[] = [];
 
-    const scriptsFolder = path.join(__dirname, targetVersionFolder);
+    const scriptsFolder = path.join(import.meta.dirname, targetVersionFolder);
 
     const files = globSync("**/*.js", { cwd: scriptsFolder, nodir: true });
 
@@ -226,9 +226,7 @@ async function findUpgradeScripts(targetVersionFolder: string): Promise<UpgradeS
         scripts.push({
             name: relativePath,
             stage: stage ?? "after-install",
-            // Need default.default because of ESM interoperability with CommonJS.
-            // See https://www.typescriptlang.org/docs/handbook/modules/reference.html#node16-nodenext.
-            script: module.default.default,
+            script: module.default,
         });
     }
 
@@ -242,6 +240,7 @@ async function runUpgradeScripts(scripts: UpgradeScript[]) {
 }
 
 async function runUpgradeScript(script: UpgradeScript) {
+    console.log(script);
     try {
         console.info(`📜 Running script '${script.name}'`);
         await script.script();
@@ -275,7 +274,7 @@ async function runEslintFix() {
 
 function listTargetVersions() {
     console.info("Available target versions");
-    const targetVersions = fs.readdirSync(__dirname).filter((entry) => entry.startsWith("v"));
+    const targetVersions = fs.readdirSync(import.meta.dirname).filter((entry) => entry.startsWith("v"));
     console.info(targetVersions.map((version) => `- ${version}`).join("\n"));
 }
 

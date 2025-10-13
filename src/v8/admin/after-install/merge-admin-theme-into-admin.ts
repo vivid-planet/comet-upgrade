@@ -1,4 +1,5 @@
-import { existsSync, readFileSync, unlinkSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+
 import { glob } from "glob";
 import { Project } from "ts-morph";
 

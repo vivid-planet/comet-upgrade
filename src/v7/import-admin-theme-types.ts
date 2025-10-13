@@ -1,7 +1,7 @@
-import fs from "fs";
-import { readFile, writeFile } from "fs/promises";
+import fs from "node:fs";
+import { readFile, writeFile } from "node:fs/promises";
 
-import { formatCode } from "../util/format-code.util";
+import { formatCode } from "../util/format-code.util.js";
 
 /**
  * Imports types from `@comet/admin-theme` in vendors.d.ts to allow using custom theme variants and colors

@@ -1,7 +1,8 @@
-import { readFile, writeFile } from "fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
+
 import { glob } from "glob";
 
-import { formatCode } from "../util/format-code.util";
+import { formatCode } from "../util/format-code.util.js";
 
 /**
  * Renames BuildRuntime component to JobRuntime.

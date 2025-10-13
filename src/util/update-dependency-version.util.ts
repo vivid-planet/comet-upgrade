@@ -1,6 +1,6 @@
-import { readFile, writeFile } from "fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 
-import { formatCode } from "./format-code.util";
+import { formatCode } from "./format-code.util.js";
 
 export async function updateDependencyVersion(packageJsonPath: string, packageName: string, newVersion: string) {
     const fileContent = (await readFile(packageJsonPath)).toString();

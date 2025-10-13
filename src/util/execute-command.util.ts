@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { spawn } from "node:child_process";
 
 // Inspired by https://github.com/facebook/create-react-app/blob/main/packages/create-react-app/createReactApp.js#L383
 export function executeCommand(command: string, args: string[] = [], options?: { silent?: boolean }) {
