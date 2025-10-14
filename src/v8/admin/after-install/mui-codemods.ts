@@ -1,4 +1,4 @@
-import { executeCommand } from "../../../util/execute-command.util";
+import { executeCommand } from "../../../util/execute-command.util.js";
 
 export default async function executeMuiCodemods() {
     await executeCommand("npx", ["@mui/codemod@latest", "v6.0.0/list-item-button-prop", "admin/src"]);

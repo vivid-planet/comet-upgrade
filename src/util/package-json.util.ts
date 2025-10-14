@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 type Json = {
     dependencies?: Record<string, string>;

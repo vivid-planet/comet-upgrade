@@ -1,9 +1,9 @@
 import * as crypto from "node:crypto";
+import fs from "node:fs";
 
-import fs from "fs";
 import { Project, SyntaxKind } from "ts-morph";
 
-import { executeCommand } from "../util/execute-command.util";
+import { executeCommand } from "../util/execute-command.util.js";
 
 export default async function addSitePreviewSecret() {
     updateApiFiles1();

@@ -1,8 +1,9 @@
-import { readFile, writeFile } from "fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
+
 import { glob } from "glob";
 
-import { executeCommand } from "../util/execute-command.util";
-import { formatCode } from "../util/format-code.util";
+import { executeCommand } from "../util/execute-command.util.js";
+import { formatCode } from "../util/format-code.util.js";
 
 export default async function useGraphqlScalars() {
     // replace graphql-type-json with graphql-scalars in api/package.json

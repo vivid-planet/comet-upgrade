@@ -1,7 +1,7 @@
-import { readFile, writeFile } from "fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 
-import { executeCommand } from "../util/execute-command.util";
-import { formatCode } from "../util/format-code.util";
+import { executeCommand } from "../util/execute-command.util.js";
+import { formatCode } from "../util/format-code.util.js";
 
 /**
  * Replaces the old font package "Roboto" with the new "Roboto Flex"

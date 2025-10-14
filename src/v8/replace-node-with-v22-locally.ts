@@ -1,8 +1,7 @@
 import { existsSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 
-import { writeFile } from "fs/promises";
-
-import { PackageJson } from "../util/package-json.util";
+import { PackageJson } from "../util/package-json.util.js";
 
 export const stage = "before-install";
 
