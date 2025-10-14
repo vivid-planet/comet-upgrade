@@ -1,4 +1,4 @@
-import { existsSync } from "fs";
+import { glob } from "glob";
 import { Project, SyntaxKind } from "ts-morph";
 
 /**
@@ -9,51 +9,67 @@ import { Project, SyntaxKind } from "ts-morph";
  */
 export default async function removeGraphQLClientFromSitePreviewHandlers() {
     const project = new Project({ tsConfigFilePath: "./site/tsconfig.json" });
+    const files: string[] = glob.sync(["site/src/**/*.ts"]);
 
-    // App Router
-    if (existsSync("site/src/app/api/site-preview/route.ts")) {
-        const sourceFile = project.getSourceFile("site/src/app/api/site-preview/route.ts");
-
-        if (!sourceFile) {
-            throw new Error("Can't get source file for site/src/app/api/site-preview/route.ts");
-        }
-
-        const getFunction = sourceFile.getFunction("GET");
-
-        if (getFunction) {
-            const callExpression = getFunction.getFirstDescendantByKind(SyntaxKind.CallExpression);
-
-            if (callExpression) {
-                callExpression.removeArgument(1);
-            }
-        }
-
-        await sourceFile.save();
-    }
-
-    // Pages Router
-    let pagesRouterApiRouteFile: string | undefined;
-
-    if (existsSync("site/src/pages/api/site-preview.page.ts")) {
-        pagesRouterApiRouteFile = "site/src/pages/api/site-preview.page.ts";
-    } else if (existsSync("site/src/pages/api/site-preview.ts")) {
-        // Projects without .page.ts extension
-        pagesRouterApiRouteFile = "site/src/pages/api/site-preview.ts";
-    }
-
-    if (pagesRouterApiRouteFile) {
-        const sourceFile = project.getSourceFile(pagesRouterApiRouteFile);
+    for (const filePath of files) {
+        const sourceFile = project.getSourceFile(filePath);
 
         if (!sourceFile) {
-            throw new Error(`Can't get source file for ${pagesRouterApiRouteFile}`);
+            throw new Error(`Can't get source file for ${filePath}`);
         }
 
-        const callExpression = sourceFile.getFirstDescendantByKind(SyntaxKind.CallExpression);
+        const importsSitePreviewRoute = Boolean(
+            sourceFile.getImportDeclaration(
+                (declaration) =>
+                    declaration.getModuleSpecifierValue().includes("@comet/cms-site") &&
+                    declaration
+                        .getNamedImports()
+                        .map((imp) => imp.getText())
+                        .includes("sitePreviewRoute"),
+            ),
+        );
 
-        if (callExpression) {
-            callExpression.removeArgument(2);
+        if (importsSitePreviewRoute) {
+            sourceFile.forEachDescendant((node) => {
+                if (node.isKind(SyntaxKind.CallExpression)) {
+                    const callExpr = node;
+                    const expression = callExpr.getExpression();
+
+                    if (expression.getText() === "sitePreviewRoute") {
+                        if (callExpr.getArguments().length > 1) {
+                            callExpr.removeArgument(1);
+                        }
+                    }
+                }
+            });
         }
 
-        await sourceFile.save();
+        const legacyPagesRouterSitePreviewApiHandler = Boolean(
+            sourceFile.getImportDeclaration(
+                (declaration) =>
+                    declaration.getModuleSpecifierValue().includes("@comet/cms-site") &&
+                    declaration
+                        .getNamedImports()
+                        .map((imp) => imp.getText())
+                        .includes("legacyPagesRouterSitePreviewApiHandler"),
+            ),
+        );
+
+        if (legacyPagesRouterSitePreviewApiHandler) {
+            sourceFile.forEachDescendant((node) => {
+                if (node.isKind(SyntaxKind.CallExpression)) {
+                    const callExpr = node;
+                    const expression = callExpr.getExpression();
+
+                    if (expression.getText() === "legacyPagesRouterSitePreviewApiHandler") {
+                        if (callExpr.getArguments().length > 2) {
+                            callExpr.removeArgument(2);
+                        }
+                    }
+                }
+            });
+        }
+
+        sourceFile.saveSync();
     }
 }
