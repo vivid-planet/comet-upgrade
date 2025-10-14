@@ -240,7 +240,6 @@ async function runUpgradeScripts(scripts: UpgradeScript[]) {
 }
 
 async function runUpgradeScript(script: UpgradeScript) {
-    console.log(script);
     try {
         console.info(`📜 Running script '${script.name}'`);
         await script.script();
