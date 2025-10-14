@@ -1,6 +1,6 @@
 {
     "name": "@comet/upgrade",
-    "version": "1.111.0",
+    "version": "1.116.0",
     "description": "Upgrade scripts for Comet DXP",
     "homepage": "https://github.com/vivid-planet/comet-upgrade#readme",
     "bugs": {
@@ -24,11 +24,11 @@
         "lint": "run-p lint:eslint lint:tsc",
         "lint:eslint": "eslint src/ **/*.json --max-warnings 0 --no-warn-ignored",
         "lint:tsc": "tsc --noEmit",
-        "prepare": "husky install",
+        "prepare": "husky",
         "start": "npm run clean && tsc --watch"
     },
     "dependencies": {
-        "chalk": "^4.1.2",
+        "chalk": "^5.6.2",
         "eslint": "^9.37.0",
         "glob": "^11.0.3",
         "prettier": "^3.6.2",
@@ -41,7 +41,7 @@
         "@types/node": "^22.18.9",
         "@types/semver": "^7.7.1",
         "husky": "^9.1.7",
-        "lint-staged": "^16.2.3",
+        "lint-staged": "^16.2.4",
         "npm-run-all2": "^8.0.4",
         "rimraf": "^6.0.1",
         "typescript": "^5.9.3"
