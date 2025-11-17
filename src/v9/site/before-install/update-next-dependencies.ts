@@ -11,8 +11,8 @@ export default async function updateNextDependencies() {
 
     const packageJson = new PackageJson("site/package.json");
 
-    packageJson.updateDependency("next", "^15.5.4");
-    packageJson.updateDependency("@next/bundle-analyzer", "^15.5.4");
+    packageJson.updateDependency("next", "^16.0.3");
+    packageJson.updateDependency("@next/bundle-analyzer", "^16.0.3");
 
     packageJson.updateDependency("react", "^19.2.0");
     packageJson.updateDependency("react-dom", "^19.2.0");
