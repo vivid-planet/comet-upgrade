@@ -13,7 +13,7 @@ export default async function addApolloServerOverride() {
     const packageJson = new PackageJson("api/package.json");
 
     packageJson.addOverride("@apollo/server-plugin-landing-page-graphql-playground", {
-        "@apollo/server": "^5.0.0",
+        "@apollo/server": "^5.1.0",
     });
 
     packageJson.save();
