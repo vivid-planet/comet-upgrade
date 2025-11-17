@@ -11,11 +11,12 @@ export default async function updateNestDependencies() {
 
     const packageJson = new PackageJson("api/package.json");
 
-    packageJson.addDependency("@apollo/server", "^4.0.0");
+    packageJson.addDependency("@apollo/server", "^5.1.0");
+    packageJson.addDependency("@as-integrations/express5", "^1.1.2");
     packageJson.removeDependency("apollo-server-core");
     packageJson.removeDependency("apollo-server-express");
 
-    packageJson.updateDependency("@nestjs/apollo", "^13.1.0");
+    packageJson.updateDependency("@nestjs/apollo", "^13.2.1");
     packageJson.updateDependency("@nestjs/common", "^11.1.3");
     packageJson.updateDependency("@nestjs/core", "^11.1.3");
     packageJson.updateDependency("@nestjs/graphql", "^13.1.0");
