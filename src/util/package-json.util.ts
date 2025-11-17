@@ -4,6 +4,7 @@ type Json = {
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
     scripts?: Record<string, string>;
+    overrides?: Record<string, string | Record<string, string>>;
 };
 
 export class PackageJson {
@@ -63,5 +64,10 @@ export class PackageJson {
 
     removeScript(name: string) {
         delete this.json.scripts?.[name];
+    }
+
+    addOverride(packageName: string, versionOrOverrides: string | Record<string, string>) {
+        this.json.overrides ??= {};
+        this.json.overrides[packageName] = versionOrOverrides;
     }
 }
