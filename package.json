@@ -36,7 +36,7 @@
         "ts-morph": "^27.0.2"
     },
     "devDependencies": {
-        "@comet/eslint-config": "^8.5.1",
+        "@comet/eslint-config": "^8.6.0",
         "@tsconfig/node22": "^22.0.3",
         "@types/node": "^22.18.13",
         "@types/semver": "^7.7.1",
