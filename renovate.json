@@ -3,7 +3,6 @@
     "extends": ["config:recommended", ":semanticCommitsDisabled"],
     "internalChecksFilter": "strict",
     "labels": ["dependencies"],
-    "lockFileMaintenance": { "enabled": true },
     "minimumReleaseAge": "3 days",
     "nvm": {
         "enabled": false
