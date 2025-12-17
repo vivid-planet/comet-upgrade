@@ -37,8 +37,8 @@
     },
     "devDependencies": {
         "@comet/eslint-config": "^8.10.0",
-        "@tsconfig/node22": "^22.0.3",
-        "@types/node": "^22.19.3",
+        "@tsconfig/node24": "^24.0.3",
+        "@types/node": "^24.10.4",
         "@types/semver": "^7.7.1",
         "husky": "^9.1.7",
         "lint-staged": "^16.2.7",
@@ -47,7 +47,7 @@
         "typescript": "^5.9.3"
     },
     "engines": {
-        "node": "22"
+        "node": ">=22 <25"
     },
     "publishConfig": {
         "access": "public",
