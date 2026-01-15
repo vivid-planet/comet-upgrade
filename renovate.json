@@ -1,35 +1,4 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:recommended", ":semanticCommitsDisabled"],
-    "internalChecksFilter": "strict",
-    "labels": ["dependencies"],
-    "lockFileMaintenance": { "enabled": true },
-    "minimumReleaseAge": "3 days",
-    "nvm": {
-        "enabled": false
-    },
-    "packageRules": [
-        {
-            "groupName": "ESLint",
-            "matchPackageNames": ["/^eslint/"]
-        },
-        {
-            "groupName": "Prettier",
-            "matchPackageNames": ["/^prettier/"]
-        },
-        {
-            "groupName": "TypeScript",
-            "matchPackageNames": ["/typescript/"]
-        },
-        {
-            "labels": ["major", "dependencies"],
-            "matchUpdateTypes": ["major"]
-        },
-        {
-            "enabled": false,
-            "matchDepNames": ["node"],
-            "matchDepTypes": ["engines", "uses-with"]
-        }
-    ],
-    "rangeStrategy": "bump"
+    "extends": ["github>vivid-planet/comet//renovate/default"]
 }
