@@ -4,7 +4,7 @@
 > This repository is archived and no longer maintained.
 >
 > Starting with Dextinity (formerly COMET) v9, we're using an AI-assisted migration approach instead of upgrade scripts.
-> See the main [Dextinity repository](https://github.com/vivid-planet/dextinity) for more information.
+> See the [migration guide](https://cms-docs.dextinity.com/docs/migration-guide/) for more information.
 >
 > The upgrade scripts for v4 to v8 remain available here for reference.
 
