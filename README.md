@@ -1,5 +1,13 @@
 # @comet/upgrade
 
+> [!CAUTION]
+> This repository is no longer maintained.
+>
+> Starting with Dextinity (formerly COMET) v9, we're using an AI-assisted migration approach instead of upgrade scripts.
+> See the [migration guide](https://cms-docs.dextinity.com/docs/migration-guide/) for more information.
+>
+> The upgrade scripts for v4 to v8 remain available for upgrading to older versions.
+
 Upgrade scripts for Comet DXP
 
 ## Usage
