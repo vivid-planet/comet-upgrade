@@ -1,7 +1,7 @@
 # @comet/upgrade
 
 > [!CAUTION]
-> This repository is archived and no longer maintained.
+> This repository is no longer maintained.
 >
 > Starting with Dextinity (formerly COMET) v9, we're using an AI-assisted migration approach instead of upgrade scripts.
 > See the [migration guide](https://cms-docs.dextinity.com/docs/migration-guide/) for more information.
